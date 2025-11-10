@@ -62,12 +62,9 @@ let currentUser = {
     isAnonymous: false
 };
 
-// Gemini API 설정 (실제 API 키로 교체 필요)
-const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY';
-
-// OpenAI API 설정 (실제 API 키로 교체 필요)
-const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY';
-const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
+function getAIClient() {
+    return typeof window !== 'undefined' ? window.AIClient : null;
+}
 
 /**
  * 초기화 함수
@@ -570,22 +567,30 @@ async function generateQuestionSummary() {
         summaryLoading.style.display = 'block';
         summaryResult.style.display = 'none';
 
-        // 모든 메시지 텍스트 수집
-        const messagesText = messages
-            .filter(m => !m.senderId.startsWith('teacher'))
-            .map(m => m.text)
-            .join('\n\n');
+        const studentMessages = messages
+            .filter(m => !m.senderId || !m.senderId.startsWith('teacher'))
+            .map(m => ({
+                sender: m.sender || '학생',
+                text: m.text
+            }));
 
-        if (messagesText.trim() === '') {
+        if (!studentMessages.length) {
             summaryLoading.innerHTML = '<p>요약할 학생 메시지가 없습니다.</p>';
             return;
         }
 
-        // Gemini API 호출
-        const summary = await callGeminiAPI(messagesText);
-        
-        // 결과 표시
-        displaySummaryResult(summary);
+        const aiClient = getAIClient();
+
+        if (!aiClient || typeof aiClient.summarizeQuestions !== 'function') {
+            throw new Error('AIClient 모듈이 로드되지 않았습니다.');
+        }
+
+        const summary = await aiClient.summarizeQuestions({
+            studentMessages,
+            language: 'ko'
+        });
+
+        displaySummaryResult(summary, aiClient);
 
     } catch (error) {
         console.error('메시지 요약 실패:', error);
@@ -594,75 +599,18 @@ async function generateQuestionSummary() {
 }
 
 /**
- * Gemini API 호출
- */
-async function callGeminiAPI(messagesText) {
-    try {
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: `다음은 채팅방에서 학생들이 올린 메시지들입니다:
-
-${messagesText}
-
-이 메시지들을 분석하여:
-1. 주요 주제별로 분류
-2. 각 주제에 대한 핵심 내용 요약
-3. 교사에게 도움이 되는 통찰 제공
-
-한국어로 명확하고 구조화된 형태로 응답해주세요.`
-                        }]
-                    }],
-                    generationConfig: {
-                        temperature: 0.7,
-                        maxOutputTokens: 1000,
-                    }
-                })
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error('API 호출 실패');
-        }
-
-        const data = await response.json();
-        
-        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-            return data.candidates[0].content.parts[0].text;
-        } else {
-            throw new Error('응답 형식 오류');
-        }
-
-    } catch (error) {
-        console.error('Gemini API 호출 실패:', error);
-        // API 키가 설정되지 않은 경우 임시 요약 생성
-        if (GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY') {
-            return generateMockSummary(messagesText);
-        }
-        throw error;
-    }
-}
-
-/**
  * 요약 결과 표시
  */
-function displaySummaryResult(summary) {
+function displaySummaryResult(summary, aiClient) {
     const summaryLoading = document.getElementById('summary-loading');
     const summaryResult = document.getElementById('summary-result');
-    
+
     summaryLoading.style.display = 'none';
     summaryResult.style.display = 'block';
-    
+
     summaryResult.innerHTML = `
         <div class="summary-content">
-            ${formatSummaryText(summary)}
+            ${formatSummaryText(summary, aiClient)}
         </div>
     `;
 }
@@ -670,7 +618,10 @@ function displaySummaryResult(summary) {
 /**
  * 요약 텍스트 포맷팅
  */
-function formatSummaryText(text) {
+function formatSummaryText(text, aiClient) {
+    if (aiClient && typeof aiClient.formatMarkdown === 'function') {
+        return aiClient.formatMarkdown(text);
+    }
     // Markdown 스타일을 HTML로 변환
     let formatted = text
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -695,10 +646,16 @@ function formatSummaryText(text) {
 function showSummaryError(error) {
     const summaryLoading = document.getElementById('summary-loading');
     const summaryResult = document.getElementById('summary-result');
-    
+
     summaryLoading.style.display = 'none';
     summaryResult.style.display = 'block';
-    
+
+    const aiClient = getAIClient();
+    if (aiClient && typeof aiClient.handleError === 'function') {
+        summaryResult.innerHTML = aiClient.handleError(error);
+        return;
+    }
+
     summaryResult.innerHTML = `
         <div class="summary-error">
             <i class="bx bx-error-circle"></i>
@@ -720,49 +677,6 @@ function closeSummaryModalFunc() {
     summaryLoading.style.display = 'block';
     summaryResult.style.display = 'none';
     summaryResult.innerHTML = '';
-}
-
-/**
- * 임시 요약 생성 (Gemini API 없이)
- */
-function generateMockSummary(messagesText) {
-    const messages = messagesText.split('\n\n').filter(m => m.trim());
-    
-    let summary = `## 채팅 요약\n\n`;
-    
-    // 주제별 분류 (간단한 키워드 매칭)
-    const topics = {
-        '질문': [],
-        '논의': [],
-        '과제': [],
-        '기타': []
-    };
-    
-    messages.forEach((m) => {
-        if (m.includes('?') || m.includes('질문') || m.includes('왜') || m.includes('어떻게')) {
-            topics['질문'].push(m);
-        } else if (m.includes('과제') || m.includes('제출') || m.includes('마감')) {
-            topics['과제'].push(m);
-        } else if (m.includes('토론') || m.includes('의견') || m.includes('생각')) {
-            topics['논의'].push(m);
-        } else {
-            topics['기타'].push(m);
-        }
-    });
-    
-    Object.keys(topics).forEach(topic => {
-        if (topics[topic].length > 0) {
-            summary += `\n### ${topic} (${topics[topic].length}개)\n\n`;
-            topics[topic].slice(0, 3).forEach(m => {
-                summary += `- ${m.substring(0, 50)}${m.length > 50 ? '...' : ''}\n`;
-            });
-        }
-    });
-    
-    summary += `\n\n**총 메시지 수**: ${messages.length}개`;
-    summary += `\n\n**주요 주제**: ${Object.keys(topics).filter(k => topics[k].length > 0).join(', ')}`;
-    
-    return summary;
 }
 
 /**
@@ -1098,8 +1012,7 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         initAsk,
         handleSendMessage,
-        generateQuestionSummary,
-        callGeminiAPI
+        generateQuestionSummary
     };
 }
 

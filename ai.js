@@ -1,391 +1,206 @@
 /**
- * AI Integration Module
- * [ClassBoard Update] 완전 리팩터링 및 통합 리디자인
- * AI 확장 준비 구조 (Gemini & OpenAI API)
- * TODO: 실제 API 연결 시
+ * AIClient Module
+ * ----------------
+ * 단일 진입점을 통해 프런트엔드에서 AI 기능을 사용합니다.
+ * 개발 모드에서는 utils/mock-ai.js의 더미 응답을 사용하고,
+ * 프로덕션에서는 서버 프록시(`/api/ai/chat`)를 호출합니다.
+ * 실제 배포 시에는 서버 레이어에서 AI API 키를 주입합니다.
  */
 
-// ===================================
-// Configuration
-// ===================================
-const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY';
-const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
-const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY';
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+(function (global) {
+    const isDev = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV;
+    let mockModulePromise = null;
 
-// ===================================
-// OpenAI API Functions
-// ===================================
+    async function loadMockModule() {
+        if (!mockModulePromise) {
+            mockModulePromise = import('./utils/mock-ai.js');
+        }
+        return mockModulePromise;
+    }
 
-/**
- * OpenAI를 사용한 텍스트 요약 생성
- * @param {string} text - 요약할 텍스트
- * @returns {Promise<string>} 요약된 텍스트
- */
-async function generateSummaryWithOpenAI(text) {
-    try {
-        const response = await fetch(OPENAI_API_URL, {
+    async function requestChat(body) {
+        if (!body || typeof body !== 'object') {
+            throw new Error('AI 요청 본문이 필요합니다.');
+        }
+
+        if (isDev) {
+            const mockModule = await loadMockModule();
+            if (typeof mockModule.handleMockChat !== 'function') {
+                throw new Error('Mock AI 모듈이 올바르게 구성되지 않았습니다.');
+            }
+            return mockModule.handleMockChat(body);
+        }
+
+        const response = await fetch('/api/ai/chat', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${OPENAI_API_KEY}`
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
-                messages: [
-                    {
-                        role: 'user',
-                        content: `다음 텍스트를 요약해주세요:\n\n${text}`
-                    }
-                ],
-                max_tokens: 500,
-                temperature: 0.7
-            })
+            body: JSON.stringify(body)
         });
 
         if (!response.ok) {
-            throw new Error('OpenAI API 호출 실패');
+            const errorMessage = await response.text().catch(() => '');
+            throw new Error(errorMessage || 'AI 서버 요청에 실패했습니다.');
         }
 
         const data = await response.json();
-        
-        if (data.choices && data.choices[0]) {
-            return data.choices[0].message.content;
-        } else {
-            throw new Error('응답 형식 오류');
+        if (!data || typeof data.content !== 'string') {
+            throw new Error('AI 서버 응답 형식이 올바르지 않습니다.');
         }
 
-    } catch (error) {
-        console.error('OpenAI 요약 실패:', error);
-        
-        // API 키가 설정되지 않은 경우 더미 데이터 반환
-        if (OPENAI_API_KEY === 'YOUR_OPENAI_API_KEY') {
-            return generateMockSummary(text);
-        }
-        
-        throw error;
+        return data;
     }
-}
 
-/**
- * OpenAI를 사용한 피드백 생성
- * @param {Object} data - 피드백을 생성할 데이터
- * @returns {Promise<string>} 생성된 피드백
- */
-async function generateFeedbackWithOpenAI(data) {
-    try {
-        const prompt = createFeedbackPrompt(data);
-        
-        const response = await fetch(OPENAI_API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${OPENAI_API_KEY}`
+    function normalizeConversation(conversation = []) {
+        return conversation
+            .filter((entry) => entry && typeof entry.text === 'string')
+            .map((entry, index) => ({
+                sender: entry.sender || `participant_${index + 1}`,
+                role: entry.role || (entry.sender === 'AI 어시스턴트' ? 'assistant' : 'user'),
+                text: entry.text.trim()
+            }));
+    }
+
+    async function getChatReply({ conversation = [], topic } = {}) {
+        const normalized = normalizeConversation(conversation);
+        if (!normalized.length) {
+            throw new Error('대화 이력이 필요합니다.');
+        }
+
+        const latest = normalized[normalized.length - 1];
+
+        const messages = [
+            {
+                role: 'system',
+                content: [
+                    '당신은 학급 토론을 돕는 한국어 AI 어시스턴트입니다.',
+                    '학생들의 의견을 존중하고 긍정적인 피드백과 질문으로 대화를 확장하세요.',
+                    '응답은 2~3문장 이내로 간결하게 작성합니다.'
+                ].join(' ')
             },
-            body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
-                messages: [
-                    {
-                        role: 'user',
-                        content: prompt
-                    }
-                ],
-                max_tokens: 500,
-                temperature: 0.7
-            })
-        });
+            ...normalized.map((entry) => ({
+                role: entry.role === 'assistant' ? 'assistant' : 'user',
+                content: `[${entry.sender}] ${entry.text}`
+            }))
+        ];
 
-        if (!response.ok) {
-            throw new Error('OpenAI API 호출 실패');
-        }
-
-        const responseData = await response.json();
-        
-        if (responseData.choices && responseData.choices[0]) {
-            return responseData.choices[0].message.content;
-        } else {
-            throw new Error('응답 형식 오류');
-        }
-
-    } catch (error) {
-        console.error('OpenAI 피드백 실패:', error);
-        
-        if (OPENAI_API_KEY === 'YOUR_OPENAI_API_KEY') {
-            return generateMockFeedback(data);
-        }
-        
-        throw error;
-    }
-}
-
-/**
- * 피드백 프롬프트 생성
- * @param {Object} data - 피드백 데이터
- * @returns {string} 생성된 프롬프트
- */
-function createFeedbackPrompt(data) {
-    return `
-다음 활동에 대한 긍정적이고 구체적인 피드백을 작성해주세요:
-
-제목: ${data.title || '제목 없음'}
-내용: ${data.content || ''}
-
-피드백 요구사항:
-1. 긍정적인 어조로 시작
-2. 구체적인 칭찬 포인트 2-3개
-3. 개선 제안 1-2개
-4. 격려의 말로 마무리
-
-한국어로 답변해주세요.
-    `.trim();
-}
-
-// ===================================
-// Gemini API Functions
-// ===================================
-
-/**
- * Gemini를 사용한 텍스트 요약 생성
- * @param {string} text - 요약할 텍스트
- * @returns {Promise<string>} 요약된 텍스트
- */
-async function generateSummaryWithGemini(text) {
-    try {
-        const response = await fetch(
-            `${GEMINI_API_URL}?key=${GEMINI_API_KEY}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: `다음 텍스트를 요약해주세요:\n\n${text}`
-                        }]
-                    }],
-                    generationConfig: {
-                        temperature: 0.7,
-                        maxOutputTokens: 500,
-                    }
-                })
+        const payload = {
+            type: 'classroom-chat',
+            topic: topic || 'classroom',
+            messages,
+            metadata: {
+                conversation: normalized,
+                lastUserMessage: latest
             }
-        );
+        };
 
-        if (!response.ok) {
-            throw new Error('Gemini API 호출 실패');
-        }
-
-        const data = await response.json();
-        
-        if (data.candidates && data.candidates[0]) {
-            return data.candidates[0].content.parts[0].text;
-        } else {
-            throw new Error('응답 형식 오류');
-        }
-
-    } catch (error) {
-        console.error('Gemini 요약 실패:', error);
-        
-        if (GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY') {
-            return generateMockSummary(text);
-        }
-        
-        throw error;
+        const result = await requestChat(payload);
+        return result.content;
     }
-}
 
-/**
- * Gemini를 사용한 대화 분석
- * @param {Array} messages - 분석할 메시지 배열
- * @returns {Promise<string>} 분석 결과
- */
-async function analyzeConversationWithGemini(messages) {
-    try {
-        const messagesText = messages.map(m => m.text).join('\n\n');
-        
-        const response = await fetch(
-            `${GEMINI_API_URL}?key=${GEMINI_API_KEY}`,
+    async function summarizeQuestions({ studentMessages = [], language = 'ko' } = {}) {
+        if (!Array.isArray(studentMessages) || studentMessages.length === 0) {
+            throw new Error('요약할 학생 메시지가 없습니다.');
+        }
+
+        const trimmedMessages = studentMessages
+            .filter((message) => message && typeof message.text === 'string' && message.text.trim() !== '')
+            .map((message, index) => ({
+                sender: message.sender || `student_${index + 1}`,
+                text: message.text.trim()
+            }));
+
+        if (!trimmedMessages.length) {
+            throw new Error('요약할 학생 메시지가 없습니다.');
+        }
+
+        const combined = trimmedMessages
+            .map((entry, index) => `${index + 1}. [${entry.sender}] ${entry.text}`)
+            .join('\n');
+
+        const messages = [
             {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: `다음 대화 내용을 분석하여:
-1. 주요 주제별로 분류
-2. 각 주제의 핵심 내용 요약
-3. 교사에게 도움이 되는 통찰 제공
-
-대화 내용:
-${messagesText}
-
-한국어로 구조화된 형태로 응답해주세요.`
-                        }]
-                    }],
-                    generationConfig: {
-                        temperature: 0.7,
-                        maxOutputTokens: 1000,
-                    }
-                })
+                role: 'system',
+                content: [
+                    '당신은 교실 질문을 분석하고 요약하는 한국어 AI 어시스턴트입니다.',
+                    '학생 메시지를 주제별로 묶고, 핵심 요점과 교사를 위한 통찰을 제공합니다.'
+                ].join(' ')
+            },
+            {
+                role: 'user',
+                content: [
+                    '다음은 학생들이 보낸 메시지 목록입니다.',
+                    '1) 주요 주제별로 분류하고,',
+                    '2) 각 주제의 핵심 내용을 요약하며,',
+                    '3) 교사가 참고할 통찰 1-2개를 제시해주세요.',
+                    `학생 메시지:\n\n${combined}`
+                ].join('\n')
             }
-        );
+        ];
 
-        if (!response.ok) {
-            throw new Error('Gemini API 호출 실패');
-        }
+        const payload = {
+            type: 'summary',
+            language,
+            messages,
+            metadata: {
+                studentMessages: trimmedMessages
+            }
+        };
 
-        const data = await response.json();
-        
-        if (data.candidates && data.candidates[0]) {
-            return data.candidates[0].content.parts[0].text;
-        } else {
-            throw new Error('응답 형식 오류');
-        }
-
-    } catch (error) {
-        console.error('Gemini 대화 분석 실패:', error);
-        
-        if (GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY') {
-            return generateMockConversationAnalysis(messages);
-        }
-        
-        throw error;
+        const result = await requestChat(payload);
+        return result.content;
     }
-}
 
-// ===================================
-// Mock Functions (더미 데이터)
-// ===================================
+    function formatMarkdown(text = '') {
+        if (typeof text !== 'string' || text.trim() === '') {
+            return '<p></p>';
+        }
 
-/**
- * Mock 요약 생성
- * @param {string} text - 원본 텍스트
- * @returns {string} 더미 요약
- */
-function generateMockSummary(text) {
-    const words = text.split(' ');
-    const summaryLength = Math.min(50, Math.floor(words.length * 0.3));
-    const summary = words.slice(0, summaryLength).join(' ');
-    
-    return `[더미 데이터] ${summary}... (요약 기능은 API 연결 후 활성화됩니다.)`;
-}
+        let formatted = text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/^### (.*$)/gim, '<h4>$1</h4>')
+            .replace(/^## (.*$)/gim, '<h3>$1</h3>')
+            .replace(/^# (.*$)/gim, '<h2>$1</h2>')
+            .replace(/^\- (.*$)/gim, '<li>$1</li>')
+            .replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>');
 
-/**
- * Mock 피드백 생성
- * @param {Object} data - 피드백 데이터
- * @returns {string} 더미 피드백
- */
-function generateMockFeedback(data) {
-    return `
-[더미 데이터] AI 피드백
+        formatted = formatted.replace(/(<li>.*?<\/li>)/gs, '<ul>$1</ul>');
 
-훌륭한 작업입니다! 학생님의 아이디어가 매우 창의적입니다.
+        return `<p>${formatted}</p>`;
+    }
 
-칭찬 포인트:
-- 명확한 논리 전개
-- 적절한 예시 제시
-- 독창적인 관점
+    function handleError(error) {
+        const message = error && error.message ? error.message : '알 수 없는 오류가 발생했습니다.';
+        return `
+            <div class="ai-error">
+                <i class="bx bx-error-circle"></i>
+                <p>AI 처리가 실패했습니다.</p>
+                <p style="color: #999; font-size: 0.9rem;">${message}</p>
+            </div>
+        `;
+    }
 
-개선 제안:
-- 더 구체적인 데이터 추가 고려
-
-계속 노력하시면 더욱 발전할 것입니다!
-
-(실제 AI 피드백은 API 연결 후 활성화됩니다.)
-    `.trim();
-}
-
-/**
- * Mock 대화 분석 생성
- * @param {Array} messages - 메시지 배열
- * @returns {string} 더미 분석 결과
- */
-function generateMockConversationAnalysis(messages) {
-    const topics = messages.length > 0 ? ['주제1', '주제2'] : ['주제 없음'];
-    
-    return `
-[더미 데이터] 대화 분석 결과
-
-주요 주제: ${topics.join(', ')}
-
-각 주제별 요약:
-- 주제1: 관련 대화 내용 요약
-- 주제2: 관련 대화 내용 요약
-
-통찰:
-- 학생들의 관심 분야 파악
-- 추가 설명이 필요한 영역 식별
-
-(실제 AI 분석은 API 연결 후 활성화됩니다.)
-    `.trim();
-}
-
-// ===================================
-// Utility Functions
-// ===================================
-
-/**
- * AI 응답 포맷팅 (Markdown → HTML)
- * @param {string} text - 원본 텍스트
- * @returns {string} 포맷된 HTML
- */
-function formatAIResponse(text) {
-    let formatted = text
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/^### (.*$)/gim, '<h4>$1</h4>')
-        .replace(/^## (.*$)/gim, '<h3>$1</h3>')
-        .replace(/^# (.*$)/gim, '<h2>$1</h2>')
-        .replace(/^\- (.*$)/gim, '<li>$1</li>')
-        .replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
-        .replace(/\n\n/g, '</p><p>')
-        .replace(/\n/g, '<br>');
-    
-    // 리스트 아이템 감싸기
-    formatted = formatted.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
-    
-    return '<p>' + formatted + '</p>';
-}
-
-/**
- * AI 응답 에러 처리
- * @param {Error} error - 에러 객체
- * @returns {string} 에러 메시지
- */
-function handleAIError(error) {
-    console.error('AI 처리 오류:', error);
-    return `
-        <div class="ai-error">
-            <i class="bx bx-error-circle"></i>
-            <p>AI 처리가 실패했습니다.</p>
-            <p style="color: #999; font-size: 0.9rem;">${error.message || '알 수 없는 오류가 발생했습니다.'}</p>
-        </div>
-    `;
-}
-
-// ===================================
-// Module Export
-// ===================================
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        generateSummaryWithOpenAI,
-        generateFeedbackWithOpenAI,
-        generateSummaryWithGemini,
-        analyzeConversationWithGemini,
-        generateMockSummary,
-        generateMockFeedback,
-        formatAIResponse,
-        handleAIError
+    const api = {
+        requestChat,
+        getChatReply,
+        summarizeQuestions,
+        formatMarkdown,
+        handleError
     };
-}
 
-// ===================================
-// Logging
-// ===================================
+    if (global) {
+        global.AIClient = api;
+    }
 
-console.log('[AI Module] AI 확장 준비 구조가 로드되었습니다.');
-console.log('[AI Module] OpenAI 및 Gemini API 연결 필요');
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = { AIClient: api };
+    }
+
+    if (typeof console !== 'undefined') {
+        console.log('[AIClient] 모듈이 초기화되었습니다. (isDev=%s)', isDev);
+    }
+})(typeof window !== 'undefined' ? window : globalThis);

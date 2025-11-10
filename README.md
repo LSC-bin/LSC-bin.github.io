@@ -45,6 +45,11 @@
 - **Visualization**: Chart.js, WordCloud2.js
 - **AI**: OpenAI / Gemini API
 
+### 🔐 AI API 키 관리
+
+- 개발 환경(`npm run dev`)에서는 `/utils/mock-ai.js`가 제공하는 더미 응답을 통해 프런트엔드 흐름을 확인합니다.
+- 실제 배포 시에는 백엔드 프록시(`/api/ai/chat`)에서 서버 환경 변수로 AI API 키를 주입해 호출하도록 구성하세요. 프런트엔드 번들에는 키를 직접 포함하지 않습니다.
+
 ## 설치 및 실행
 
 ### 1. Firebase 프로젝트 설정
