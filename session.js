@@ -4,14 +4,16 @@
  * Activity + Ask 통합 UI 리디자인
  */
 
+import { AppUtils } from './utils/app-utils.js';
+
 const AuthServiceRef = window.AuthService || {};
-const AppUtilsRef = window.AppUtils || {};
+const AppUtilsRef = window.AppUtils || AppUtils;
 const {
-    escapeHtml: escapeHtmlUtil = (text) => String(text ?? ''),
-    getTimeAgo: getTimeAgoUtil = () => '',
-    generateId: generateIdUtil = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-    getStoredData: getStoredDataUtil = (key, fallback) => fallback,
-    setStoredData: setStoredDataUtil = () => {}
+    escapeHtml: escapeHtmlUtil = AppUtils.escapeHtml,
+    getTimeAgo: getTimeAgoUtil = AppUtils.getTimeAgo,
+    generateId: generateIdUtil = AppUtils.generateId,
+    getStoredData: getStoredDataUtil = AppUtils.getStoredData,
+    setStoredData: setStoredDataUtil = AppUtils.setStoredData
 } = AppUtilsRef;
 
 const escapeHtml = (text) => escapeHtmlUtil(text);

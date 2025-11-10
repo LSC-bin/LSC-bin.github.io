@@ -3,22 +3,12 @@
  * 수업 게시물 생성 페이지 로직
  */
 
-const AppUtilsRef = window.AppUtils || {};
+import { AppUtils } from './utils/app-utils.js';
+
+const AppUtilsRef = (typeof window !== 'undefined' && window.AppUtils) ? window.AppUtils : AppUtils;
 const {
-    getStoredArray: getStoredArrayUtil = (key, fallback = []) => {
-        try {
-            return JSON.parse(localStorage.getItem(key) || '[]');
-        } catch {
-            return fallback;
-        }
-    },
-    setStoredArray: setStoredArrayUtil = (key, value) => {
-        try {
-            localStorage.setItem(key, JSON.stringify(value || []));
-        } catch (err) {
-            console.warn('[AppUtils] Failed to persist sessions', err);
-        }
-    }
+    getStoredArray: getStoredArrayUtil = AppUtils.getStoredArray,
+    setStoredArray: setStoredArrayUtil = AppUtils.setStoredArray
 } = AppUtilsRef;
 
 const getStoredArray = (key, fallback = []) => getStoredArrayUtil(key, fallback);

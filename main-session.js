@@ -4,6 +4,8 @@
  * ClassBoard Design 인터랙션 로직 & 공통 함수
  */
 
+import { AppUtils } from './utils/app-utils.js';
+
 // DOM 요소 선택
 const sidebarController = typeof window.initSidebar === 'function'
     ? window.initSidebar(document.querySelector('.sidebar'))
@@ -11,20 +13,21 @@ const sidebarController = typeof window.initSidebar === 'function'
 const sidebar = sidebarController?.root || document.getElementById('sidebar');
 
 // 유틸리티 모듈 참조
+
 const AuthServiceRef = window.AuthService || {};
-const AppUtilsRef = window.AppUtils || {};
+const AppUtilsRef = window.AppUtils || AppUtils;
 const {
-    escapeHtml: escapeHtmlUtil = (text) => String(text ?? ''),
-    formatDate: formatDateUtil = (date, options) => new Date(date).toLocaleDateString('ko-KR', options),
-    formatTime: formatTimeUtil = (date, options) => new Date(date).toLocaleTimeString('ko-KR', options || { hour: '2-digit', minute: '2-digit' }),
-    getRelativeTime: getRelativeTimeUtil = () => '',
-    getStoredArray: getStoredArrayUtil = (key, fallback = []) => Array.isArray(fallback) ? [...fallback] : [],
-    setStoredArray: setStoredArrayUtil = () => {},
-    getStoredData: getStoredDataUtil = (key, fallback) => (fallback === undefined ? null : fallback),
-    setStoredData: setStoredDataUtil = () => {},
-    getStoredValue: getStoredValueUtil = (key, fallback = null) => fallback,
-    setStoredValue: setStoredValueUtil = () => {},
-    removeStoredData: removeStoredDataUtil = () => {}
+    escapeHtml: escapeHtmlUtil = AppUtils.escapeHtml,
+    formatDate: formatDateUtil = AppUtils.formatDate,
+    formatTime: formatTimeUtil = AppUtils.formatTime,
+    getRelativeTime: getRelativeTimeUtil = AppUtils.getRelativeTime,
+    getStoredArray: getStoredArrayUtil = AppUtils.getStoredArray,
+    setStoredArray: setStoredArrayUtil = AppUtils.setStoredArray,
+    getStoredData: getStoredDataUtil = AppUtils.getStoredData,
+    setStoredData: setStoredDataUtil = AppUtils.setStoredData,
+    getStoredValue: getStoredValueUtil = AppUtils.getStoredValue,
+    setStoredValue: setStoredValueUtil = AppUtils.setStoredValue,
+    removeStoredData: removeStoredDataUtil = AppUtils.removeStoredData
 } = AppUtilsRef;
 
 function escapeHtml(text) {

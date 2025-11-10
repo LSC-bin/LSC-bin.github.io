@@ -11,24 +11,13 @@
 // ===================================
 // WordCloud - 고정 폰트 크기
 // ===================================
-const AppUtilsRef = window.AppUtils || {};
+import { AppUtils } from './utils/app-utils.js';
+
+const AppUtilsRef = window.AppUtils || AppUtils;
 const {
-    escapeHtml: escapeHtmlUtil = (text) => String(text ?? ''),
-    getStoredData: getStoredDataUtil = (key, fallback) => {
-        try {
-            const raw = localStorage.getItem(key);
-            return raw ? JSON.parse(raw) : fallback;
-        } catch {
-            return fallback;
-        }
-    },
-    setStoredData: setStoredDataUtil = (key, value) => {
-        try {
-            localStorage.setItem(key, JSON.stringify(value));
-        } catch (err) {
-            console.warn('[AppUtils] Failed to persist ask standalone data', err);
-        }
-    }
+    escapeHtml: escapeHtmlUtil = AppUtils.escapeHtml,
+    getStoredData: getStoredDataUtil = AppUtils.getStoredData,
+    setStoredData: setStoredDataUtil = AppUtils.setStoredData
 } = AppUtilsRef;
 
 const escapeHtml = (text) => escapeHtmlUtil(text);

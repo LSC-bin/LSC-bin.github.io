@@ -4,23 +4,12 @@
  * 클래스 선택 기능 구현 - localStorage 기반
  */
 
-const AppUtilsRef = window.AppUtils || {};
+import { AppUtils } from './utils/app-utils.js';
+
+const AppUtilsRef = window.AppUtils || AppUtils;
 const {
-    getStoredData: getStoredDataUtil = (key, fallback) => {
-        try {
-            const raw = localStorage.getItem(key);
-            return raw ? JSON.parse(raw) : fallback;
-        } catch {
-            return fallback;
-        }
-    },
-    setStoredData: setStoredDataUtil = (key, value) => {
-        try {
-            localStorage.setItem(key, JSON.stringify(value));
-        } catch (err) {
-            console.warn('[AppUtils] Failed to persist class data', err);
-        }
-    }
+    getStoredData: getStoredDataUtil = AppUtils.getStoredData,
+    setStoredData: setStoredDataUtil = AppUtils.setStoredData
 } = AppUtilsRef;
 
 const getStoredData = (key, fallback) => getStoredDataUtil(key, fallback);

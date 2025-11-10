@@ -4,41 +4,18 @@
  * Firebase 구조 고려, 현재는 localStorage 기반
  */
 
-const AppUtilsRef = window.AppUtils || {};
+import { AppUtils } from './utils/app-utils.js';
+
+const AppUtilsRef = (typeof window !== 'undefined' && window.AppUtils) ? window.AppUtils : AppUtils;
 const {
-    escapeHtml: escapeHtmlUtil = (text) => String(text ?? ''),
-    formatDate: formatDateUtil = (date, options) => new Date(date).toLocaleDateString('ko-KR', options),
-    getTimeAgo: getTimeAgoUtil = () => '',
-    generateId: generateIdUtil = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-    getStoredArray: getStoredArrayUtil = (key, fallback = []) => {
-        try {
-            return JSON.parse(localStorage.getItem(key) || '[]');
-        } catch {
-            return fallback;
-        }
-    },
-    setStoredArray: setStoredArrayUtil = (key, value) => {
-        try {
-            localStorage.setItem(key, JSON.stringify(value || []));
-        } catch (err) {
-            console.warn('[AppUtils] Failed to persist activity-session array data', err);
-        }
-    },
-    getStoredData: getStoredDataUtil = (key, fallback) => {
-        try {
-            const raw = localStorage.getItem(key);
-            return raw ? JSON.parse(raw) : fallback;
-        } catch {
-            return fallback;
-        }
-    },
-    setStoredData: setStoredDataUtil = (key, value) => {
-        try {
-            localStorage.setItem(key, JSON.stringify(value));
-        } catch (err) {
-            console.warn('[AppUtils] Failed to persist activity-session data', err);
-        }
-    }
+    escapeHtml: escapeHtmlUtil = AppUtils.escapeHtml,
+    formatDate: formatDateUtil = AppUtils.formatDate,
+    getTimeAgo: getTimeAgoUtil = AppUtils.getTimeAgo,
+    generateId: generateIdUtil = AppUtils.generateId,
+    getStoredArray: getStoredArrayUtil = AppUtils.getStoredArray,
+    setStoredArray: setStoredArrayUtil = AppUtils.setStoredArray,
+    getStoredData: getStoredDataUtil = AppUtils.getStoredData,
+    setStoredData: setStoredDataUtil = AppUtils.setStoredData
 } = AppUtilsRef;
 
 const escapeHtml = (text) => escapeHtmlUtil(text);
