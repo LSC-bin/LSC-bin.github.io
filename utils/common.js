@@ -168,6 +168,40 @@
         }
     }
 
+    function getStoredValue(key, fallback = null) {
+        if (typeof global.localStorage === 'undefined') {
+            return fallback;
+        }
+        const value = global.localStorage.getItem(key);
+        return value !== null ? value : fallback;
+    }
+
+    function setStoredValue(key, value) {
+        if (typeof global.localStorage === 'undefined') {
+            return;
+        }
+        try {
+            if (value === undefined || value === null) {
+                global.localStorage.removeItem(key);
+            } else {
+                global.localStorage.setItem(key, String(value));
+            }
+        } catch (err) {
+            console.warn('[AppUtils] Failed to persist value to storage:', err);
+        }
+    }
+
+    function removeStoredData(key) {
+        if (typeof global.localStorage === 'undefined') {
+            return;
+        }
+        try {
+            global.localStorage.removeItem(key);
+        } catch (err) {
+            console.warn('[AppUtils] Failed to remove data from storage:', err);
+        }
+    }
+
     function getStoredArray(key, fallback = []) {
         const data = getStoredData(key, fallback);
         return Array.isArray(data) ? data : fallback;
@@ -220,6 +254,9 @@
         setStoredData,
         getStoredArray,
         setStoredArray,
+        getStoredValue,
+        setStoredValue,
+        removeStoredData,
         showToast
     };
 
