@@ -38,7 +38,8 @@
 
 ## 기술 스택
 
-- **Frontend**: HTML5, CSS3, JavaScript (ES6)
+- **Frontend**: HTML5, SCSS, JavaScript (ES6)
+- **Build Tooling**: Vite, ESLint, Prettier, Jest
 - **Backend**: Firebase (Auth, Firestore, Storage)
 - **Hosting**: Firebase Hosting / Vercel
 - **Visualization**: Chart.js, WordCloud2.js
@@ -59,12 +60,12 @@
 
 ```javascript
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: 'YOUR_API_KEY',
+    authDomain: 'YOUR_AUTH_DOMAIN',
+    projectId: 'YOUR_PROJECT_ID',
+    storageBucket: 'YOUR_STORAGE_BUCKET',
+    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
+    appId: 'YOUR_APP_ID'
 };
 ```
 
@@ -98,81 +99,97 @@ service firebase.storage {
 }
 ```
 
-### 5. 로컬 실행
+### 5. 개발 환경 준비
+
+프로젝트 루트에는 `.nvmrc`가 포함되어 있으며 Node.js 18 LTS를 사용합니다.
 
 ```bash
-# HTTP 서버 실행 (Python 3)
-python -m http.server 8000
+# nvm을 사용하는 경우
+nvm install
+nvm use
 
-# 또는 Node.js
-npx http-server
-
-# 브라우저에서 접속
-http://localhost:8000
+# asdf를 사용하는 경우 (.tool-versions 지원)
+asdf install
 ```
 
-### 6. 배포
+### 6. 의존성 설치 및 스크립트
+
+```bash
+npm install       # 패키지 설치
+npm run dev       # Vite 개발 서버 (http://localhost:5173)
+npm run lint      # ESLint + Prettier 검사
+npm run test      # Jest 단위 테스트 (테스트가 없으면 통과)
+npm run build     # 정적 자산 번들링 (dist/)
+```
+
+### 7. 배포
+
+`npm run build` 실행 후 생성되는 `dist/` 폴더를 배포 대상에 업로드합니다.
 
 #### Firebase Hosting
 
 ```bash
-# Firebase CLI 설치
 npm install -g firebase-tools
-
-# 로그인
 firebase login
-
-# 프로젝트 초기화
 firebase init hosting
-
-# 배포
 firebase deploy --only hosting
 ```
 
 #### Vercel
 
 ```bash
-# Vercel CLI 설치
 npm install -g vercel
-
-# 배포
-vercel
+vercel --prod
 ```
 
 ## 디자인 시스템
 
-### 색상
+### 디자인 토큰
 
-- `--light`: #F9F9F9
-- `--blue`: #3C91E6
-- `--yellow`: #FFCE26
-- `--orange`: #FD7238
-- `--grey`: #EEE
-- `--dark`: #342E37
-- `--red`: #DB504A
+`styles/_tokens.scss` 파일은 공통 색상, 그림자, 간격, 폰트 등을 SCSS 변수로 정의하고 `:root` 커스텀 프로퍼티로 노출합니다. 대표적인 토큰은 다음과 같습니다.
 
-### 폰트
+- `--color-primary`: #3C91E6 (주요 포인트 컬러)
+- `--color-secondary`: #845EF7 (보조 포인트 컬러)
+- `--color-accent`: #FD7238 (강조 컬러)
+- `--color-background`: #F5F7FB (기본 배경)
+- `--color-surface`: #FFFFFF (카드/패널 배경)
+- `--shadow-soft`: 0 8px 32px 0 rgba(31, 38, 135, 0.1)
+- `--spacing-lg`: 1.5rem, `--radius-lg`: 16px 등 간격/모서리 값
 
-- **메인**: Poppins
-- **보조**: Lato
+### SCSS 믹스인
 
-### 주요 특징
+`styles/_mixins.scss`에는 공통 레이아웃과 효과를 위한 믹스인이 포함되어 있습니다.
 
-- 카드형 레이아웃
-- 부드러운 전환 효과
-- 반응형 디자인
-- 다크 모드 지원
-- 직관적인 UX
+- `glass-panel`: 글래스모피즘 배경/보더/그림자를 한번에 적용
+- `flex-stack`: 반복되는 flex 레이아웃(방향/정렬/간격) 정의
+- `card-surface`: 카드형 패널의 배경, 그림자, 패딩 적용
+- `text-gradient`: 그라디언트 텍스트 효과
+
+모든 페이지 SCSS는 필요한 토큰과 믹스인을 불러와 재사용합니다.
 
 ## 프로젝트 구조
 
 ```
-education dashboard/
-├── index.html          # 메인 HTML
-├── style.css           # 스타일시트
-├── script.js           # 메인 JavaScript
-├── activity.js         # Activity 페이지 JavaScript
-└── README.md           # 문서
+LSC-bin.github.io/
+├── activity-session.html
+├── activity-session.scss
+├── ask-session.html
+├── ask-session.scss
+├── chat.html
+├── chat.scss
+├── index.html
+├── style.scss
+├── session.html
+├── session.scss
+├── styles/
+│   ├── _mixins.scss
+│   └── _tokens.scss
+├── vite.config.js
+├── eslint.config.js
+├── jest.config.cjs
+├── package.json
+├── .nvmrc
+└── .github/workflows/ci.yml
 ```
 
 ## 사용자 역할

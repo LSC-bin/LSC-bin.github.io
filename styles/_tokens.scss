@@ -1,0 +1,88 @@
+$color-surface: #ffffff;
+$color-background: #f5f7fb;
+$color-overlay: rgba(255, 255, 255, 0.25);
+$color-overlay-dark: rgba(52, 46, 55, 0.25);
+$color-overlay-border: rgba(255, 255, 255, 0.18);
+$color-primary: #3c91e6;
+$color-secondary: #845ef7;
+$color-warning: #ffce26;
+$color-accent: #fd7238;
+$color-danger: #db504a;
+$color-muted: #d4d7e5;
+$color-dark: #342e37;
+$color-text-secondary: #5b6c8f;
+
+$font-poppins: 'Poppins', sans-serif;
+$font-lato: 'Lato', sans-serif;
+$font-noto: 'Noto Sans KR', sans-serif;
+
+$shadow-soft: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+$shadow-medium: 0 12px 48px 0 rgba(31, 38, 135, 0.15);
+$shadow-strong: 0 18px 64px 0 rgba(31, 38, 135, 0.25);
+
+$transition-fast: 0.2s ease-in-out;
+$transition-base: 0.3s ease-in-out;
+$transition-slow: 0.5s ease-in-out;
+
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-xl: 24px;
+
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+
+@mixin inject-root() {
+  :root {
+    --color-surface: #{$color-surface};
+    --color-background: #{$color-background};
+    --color-primary: #{$color-primary};
+    --color-secondary: #{$color-secondary};
+    --color-warning: #{$color-warning};
+    --color-accent: #{$color-accent};
+    --color-danger: #{$color-danger};
+    --color-muted: #{$color-muted};
+    --color-dark: #{$color-dark};
+    --color-text-secondary: #{$color-text-secondary};
+
+    --font-poppins: #{$font-poppins};
+    --font-lato: #{$font-lato};
+    --font-noto: #{$font-noto};
+
+    --glass-bg: #{$color-overlay};
+    --glass-bg-dark: #{$color-overlay-dark};
+    --glass-border: #{$color-overlay-border};
+    --glass-blur: blur(15px);
+
+    --shadow-soft: #{$shadow-soft};
+    --shadow-medium: #{$shadow-medium};
+    --shadow-strong: #{$shadow-strong};
+
+    --transition-fast: #{$transition-fast};
+    --transition-base: #{$transition-base};
+    --transition-slow: #{$transition-slow};
+
+    --radius-sm: #{$radius-sm};
+    --radius-md: #{$radius-md};
+    --radius-lg: #{$radius-lg};
+    --radius-xl: #{$radius-xl};
+
+    --spacing-xs: #{$spacing-xs};
+    --spacing-sm: #{$spacing-sm};
+    --spacing-md: #{$spacing-md};
+    --spacing-lg: #{$spacing-lg};
+    --spacing-xl: #{$spacing-xl};
+
+    /* Backward compatible aliases */
+    --light: var(--color-surface);
+    --dark: var(--color-dark);
+    --blue: var(--color-primary);
+    --yellow: var(--color-warning);
+    --orange: var(--color-accent);
+    --grey: var(--color-muted);
+    --red: var(--color-danger);
+  }
+}

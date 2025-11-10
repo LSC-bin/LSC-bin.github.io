@@ -1,0 +1,31 @@
+@use './tokens';
+
+@mixin glass-panel($background: var(--glass-bg), $border-color: var(--glass-border), $radius: var(--radius-lg)) {
+  background: $background;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid $border-color;
+  border-radius: $radius;
+  box-shadow: var(--shadow-soft);
+}
+
+@mixin flex-stack($direction: row, $justify: flex-start, $align: stretch, $gap: var(--spacing-sm)) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+  gap: $gap;
+}
+
+@mixin card-surface($padding: var(--spacing-lg), $shadow: var(--shadow-soft)) {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: $shadow;
+  padding: $padding;
+}
+
+@mixin text-gradient($from: var(--color-primary), $to: var(--color-secondary)) {
+  background: linear-gradient(135deg, $from 0%, $to 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
