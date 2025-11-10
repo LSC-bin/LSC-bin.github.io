@@ -5,22 +5,12 @@
  * TODO: Firebase & OpenAI API 연결 시
  */
 
-const AppUtilsRef = window.AppUtils || {};
+import { AppUtils } from './utils/app-utils.js';
+
+const AppUtilsRef = window.AppUtils || AppUtils;
 const {
-    getStoredArray: getStoredArrayUtil = (key, fallback = []) => {
-        try {
-            return JSON.parse(localStorage.getItem(key) || '[]');
-        } catch {
-            return fallback;
-        }
-    },
-    setStoredArray: setStoredArrayUtil = (key, value) => {
-        try {
-            localStorage.setItem(key, JSON.stringify(value || []));
-        } catch (err) {
-            console.warn('[AppUtils] Failed to persist quiz data', err);
-        }
-    }
+    getStoredArray: getStoredArrayUtil = AppUtils.getStoredArray,
+    setStoredArray: setStoredArrayUtil = AppUtils.setStoredArray
 } = AppUtilsRef;
 
 const getStoredArray = (key, fallback = []) => getStoredArrayUtil(key, fallback);

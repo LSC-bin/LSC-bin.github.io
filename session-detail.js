@@ -3,17 +3,13 @@
  * 수업 상세 페이지 로직 - sessionId 기반 통합 관리
  */
 
-const AppUtilsRef = window.AppUtils || {};
+import { AppUtils } from './utils/app-utils.js';
+
+const AppUtilsRef = window.AppUtils || AppUtils;
 const {
-    formatDate: formatDateUtil = (date, options) => new Date(date).toLocaleDateString('ko-KR', options),
-    showToast: showToastUtil = () => {},
-    getStoredArray: getStoredArrayUtil = (key, fallback = []) => {
-        try {
-            return JSON.parse(localStorage.getItem(key) || '[]');
-        } catch {
-            return fallback;
-        }
-    }
+    formatDate: formatDateUtil = AppUtils.formatDate,
+    showToast: showToastUtil = AppUtils.showToast,
+    getStoredArray: getStoredArrayUtil = AppUtils.getStoredArray
 } = AppUtilsRef;
 
 const formatDateFromUtils = (date, options) => formatDateUtil(date, options);

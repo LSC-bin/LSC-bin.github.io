@@ -5,25 +5,15 @@
  * TODO: Firebase 연결 시
  */
 
-const AppUtilsRef = window.AppUtils || {};
+import { AppUtils } from './utils/app-utils.js';
+
+const AppUtilsRef = window.AppUtils || AppUtils;
 const {
-    escapeHtml: escapeHtmlUtil = (text) => String(text ?? ''),
-    getTimeAgo: getTimeAgoUtil = () => '',
-    generateId: generateIdUtil = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-    getStoredArray: getStoredArrayUtil = (key, fallback = []) => {
-        try {
-            return JSON.parse(localStorage.getItem(key) || '[]');
-        } catch {
-            return fallback;
-        }
-    },
-    setStoredArray: setStoredArrayUtil = (key, value) => {
-        try {
-            localStorage.setItem(key, JSON.stringify(value || []));
-        } catch (err) {
-            console.warn('[AppUtils] Failed to persist activity data', err);
-        }
-    }
+    escapeHtml: escapeHtmlUtil = AppUtils.escapeHtml,
+    getTimeAgo: getTimeAgoUtil = AppUtils.getTimeAgo,
+    generateId: generateIdUtil = AppUtils.generateId,
+    getStoredArray: getStoredArrayUtil = AppUtils.getStoredArray,
+    setStoredArray: setStoredArrayUtil = AppUtils.setStoredArray
 } = AppUtilsRef;
 
 const escapeHtml = (text) => escapeHtmlUtil(text);

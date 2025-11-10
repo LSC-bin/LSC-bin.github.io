@@ -11,25 +11,14 @@
 // sessions/{classId}/chat/messages/{messageId}
 // { text, sender, timestamp }
 
-const AppUtilsRef = window.AppUtils || {};
+import { AppUtils } from './utils/app-utils.js';
+
+const AppUtilsRef = (typeof window !== 'undefined' && window.AppUtils) ? window.AppUtils : AppUtils;
 const {
-    escapeHtml: escapeHtmlUtil = (text) => String(text ?? ''),
-    generateId: generateIdUtil = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-    getStoredData: getStoredDataUtil = (key, fallback) => {
-        try {
-            const raw = localStorage.getItem(key);
-            return raw ? JSON.parse(raw) : fallback;
-        } catch {
-            return fallback;
-        }
-    },
-    setStoredData: setStoredDataUtil = (key, value) => {
-        try {
-            localStorage.setItem(key, JSON.stringify(value));
-        } catch (err) {
-            console.warn('[AppUtils] Failed to persist chat data', err);
-        }
-    }
+    escapeHtml: escapeHtmlUtil = AppUtils.escapeHtml,
+    generateId: generateIdUtil = AppUtils.generateId,
+    getStoredData: getStoredDataUtil = AppUtils.getStoredData,
+    setStoredData: setStoredDataUtil = AppUtils.setStoredData
 } = AppUtilsRef;
 
 const escapeHtml = (text) => escapeHtmlUtil(text);

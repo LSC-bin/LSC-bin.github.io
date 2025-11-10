@@ -4,11 +4,13 @@
  * 상태 관리, 사이드바, 다크모드 등 공통 기능
  */
 
+import { AppUtils } from './utils/app-utils.js';
+
 const AuthServiceRef = typeof window !== 'undefined' ? (window.AuthService || {}) : {};
-const AppUtilsRef = typeof window !== 'undefined' ? (window.AppUtils || {}) : {};
+const AppUtilsRef = typeof window !== 'undefined' ? (window.AppUtils || AppUtils) : AppUtils;
 const {
-    getStoredValue: getStoredValueUtil = () => null,
-    setStoredValue: setStoredValueUtil = () => {}
+    getStoredValue: getStoredValueUtil = AppUtils.getStoredValue,
+    setStoredValue: setStoredValueUtil = AppUtils.setStoredValue
 } = AppUtilsRef;
 
 const getStoredValue = (key, fallback = null) => getStoredValueUtil(key, fallback);
@@ -154,6 +156,7 @@ async function initApp(options = {}) {
 }
 
 if (typeof window !== 'undefined') {
+    window.AppUtils ??= AppUtils;
     window.initApp = initApp;
     if (typeof window.initSidebar === 'function') {
         window.initSidebar(window.document.querySelector('.sidebar'));
