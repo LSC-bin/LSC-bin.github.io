@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <!-- [ClassBoard Update] 완전 리팩터링 및 통합 리디자인 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI ClassBoard - 클래스 선택</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Boxicons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="class-select-page">
+    <!-- [ClassBoard Update] 클래스 선택 기능 추가 -->
+    <!-- Navbar -->
+    <header id="navbar" class="class-select-navbar">
+        <div class="navbar-brand">
+            <i class="bx bxs-graduation"></i>
+            <span class="brand-name">ClassBoard</span>
+        </div>
+
+        <div class="navbar-right">
+            <label class="dark-mode-toggle">
+                <input type="checkbox" id="switch-mode" aria-label="다크 모드 전환">
+                <span class="switch-lm"></span>
+            </label>
+
+            <div class="profile">
+                <button class="profile-btn" aria-label="프로필">
+                    <i class="bx bxs-user-circle"></i>
+                </button>
+                <div class="profile-dropdown">
+                    <div class="profile-info">
+                        <div class="profile-info-header">
+                            <i class="bx bxs-user-circle"></i>
+                            <div>
+                                <p class="profile-name" id="profile-name">관리자</p>
+                                <p class="profile-role" id="profile-role">교사</p>
+                            </div>
+                        </div>
+                        <div class="profile-class">
+                            <i class="bx bxs-school"></i>
+                            <span id="profile-class-name">클래스를 선택하세요</span>
+                        </div>
+                    </div>
+                    <div class="profile-divider"></div>
+                    <a href="#profile" class="profile-menu-item">
+                        <i class="bx bxs-user"></i>
+                        <span>프로필</span>
+                    </a>
+                    <a href="#logout" class="profile-menu-item logout-item">
+                        <i class="bx bx-log-out"></i>
+                        <span>로그아웃</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="class-select-main">
+        <div class="class-select-container">
+            <!-- 헤더 -->
+            <div class="class-select-header">
+            <div class="header-icon">
+                <i class="bx bxs-school bx-fade"></i>
+            </div>
+            <h1>클래스를 선택하세요</h1>
+            <p>관리하시는 클래스를 선택하여 시작하세요</p>
+        </div>
+
+        <!-- 클래스 카드 Grid -->
+        <div class="class-grid">
+            <div class="class-card" data-class-id="1학년 1반">
+                <div class="class-card-icon">
+                    <i class="bx bx-group bx-spin-hover"></i>
+                </div>
+                <h3>1학년 1반</h3>
+                <div class="class-card-info">
+                    <div class="info-item">
+                        <i class="bx bx-user"></i>
+                        <span>28명</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="bx bx-message-square"></i>
+                        <span>12개 게시물</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="class-card" data-class-id="1학년 2반">
+                <div class="class-card-icon">
+                    <i class="bx bx-group bx-spin-hover"></i>
+                </div>
+                <h3>1학년 2반</h3>
+                <div class="class-card-info">
+                    <div class="info-item">
+                        <i class="bx bx-user"></i>
+                        <span>30명</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="bx bx-message-square"></i>
+                        <span>8개 게시물</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="class-card" data-class-id="2학년 AI 프로젝트반">
+                <div class="class-card-icon">
+                    <i class="bx bxs-brain bx-spin-hover"></i>
+                </div>
+                <h3>2학년 AI 프로젝트반</h3>
+                <div class="class-card-info">
+                    <div class="info-item">
+                        <i class="bx bx-user"></i>
+                        <span>15명</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="bx bx-message-square"></i>
+                        <span>25개 게시물</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="class-card" data-class-id="1학년 3반">
+                <div class="class-card-icon">
+                    <i class="bx bx-group bx-spin-hover"></i>
+                </div>
+                <h3>1학년 3반</h3>
+                <div class="class-card-info">
+                    <div class="info-item">
+                        <i class="bx bx-user"></i>
+                        <span>32명</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="bx bx-message-square"></i>
+                        <span>5개 게시물</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="class-card" data-class-id="2학년 1반">
+                <div class="class-card-icon">
+                    <i class="bx bx-group bx-spin-hover"></i>
+                </div>
+                <h3>2학년 1반</h3>
+                <div class="class-card-info">
+                    <div class="info-item">
+                        <i class="bx bx-user"></i>
+                        <span>27명</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="bx bx-message-square"></i>
+                        <span>18개 게시물</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="class-card add-class-card">
+                <div class="class-card-icon">
+                    <i class="bx bx-plus bx-fade"></i>
+                </div>
+                <h3>새 클래스 만들기</h3>
+                <p>새로운 클래스를 생성하세요</p>
+            </div>
+        </div>
+
+        <!-- 뒤로가기 버튼 -->
+        <div class="class-select-footer">
+            <button class="btn-back" id="back-btn">
+                <i class="bx bx-arrow-back"></i>
+                <span>뒤로 가기</span>
+            </button>
+        </div>
+    </div>
+    </main>
+
+    <script src="dialog.js"></script>
+    <script src="core.js"></script>
+    <script src="script.js"></script>
+    <script src="class-select.js"></script>
+</body>
+</html>
+

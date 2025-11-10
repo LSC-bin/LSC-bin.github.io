@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI ClassBoard | 단체 채팅</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="chat.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.1.1/wordcloud2.min.js"></script>
+</head>
+<body>
+    <header class="chat-header">
+        <h2>💬 우리 반 단체 채팅방</h2>
+        <p>최대 50명의 학생이 함께 대화하며, 주요 단어가 실시간 워드클라우드로 표시됩니다.</p>
+    </header>
+
+    <section class="chat-layout">
+        <!-- 왼쪽: 워드클라우드 -->
+        <div class="wordcloud-panel">
+            <h3>
+                <i class="bx bx-cloud"></i>
+                실시간 워드클라우드
+            </h3>
+            <canvas id="wordCloudCanvas"></canvas>
+        </div>
+
+        <!-- 오른쪽: 채팅 -->
+        <div class="chat-panel">
+            <h3>
+                <i class="bx bxs-chat"></i>
+                채팅방
+            </h3>
+            <div id="chatMessages" class="chat-window">
+                <!-- 채팅 메시지가 여기에 동적으로 생성됩니다 -->
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="메시지를 입력하세요..." />
+                <button id="sendChat">
+                    <i class="bx bx-send"></i> 전송
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Back to Home Button -->
+    <a href="index.html" class="home-btn">
+        <i class="bx bx-home"></i>
+    </a>
+
+    <script src="chat.js"></script>
+</body>
+</html>
+
