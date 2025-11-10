@@ -18,6 +18,13 @@ const pages = {
 export default defineConfig({
   appType: 'mpa',
   root: __dirname,
+  resolve: {
+    alias: {
+      '@utils': resolve(__dirname, 'utils'),
+      '@modules': resolve(__dirname, 'modules'),
+      '@pages': resolve(__dirname, 'pages')
+    }
+  },
   server: {
     port: 5173,
     open: 'index.html'

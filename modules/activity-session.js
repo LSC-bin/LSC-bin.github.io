@@ -4,7 +4,7 @@
  * Firebase 구조 고려, 현재는 localStorage 기반
  */
 
-import { AppUtils } from './utils/app-utils.js';
+import { AppUtils } from '@utils/app-utils.js';
 
 const AppUtilsRef = (typeof window !== 'undefined' && window.AppUtils) ? window.AppUtils : AppUtils;
 const {
@@ -1537,15 +1537,25 @@ window.removeAssignmentFile = removeAssignmentFile;
  */
 document.addEventListener('DOMContentLoaded', initActivitySession);
 
-/**
- * 내보내기 (모듈 시스템 지원)
- */
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        initActivitySession,
-        addMemo,
-        deleteMemo,
-        renderMemos,
-        filterAndRenderMemos
-    };
+const ActivitySessionModule = {
+    initActivitySession,
+    addMemo,
+    deleteMemo,
+    renderMemos,
+    filterAndRenderMemos
+};
+
+if (typeof window !== 'undefined') {
+    window.ActivitySessionModule = Object.assign({}, window.ActivitySessionModule || {}, ActivitySessionModule);
+    Object.assign(window, ActivitySessionModule);
 }
+
+export {
+    initActivitySession,
+    addMemo,
+    deleteMemo,
+    renderMemos,
+    filterAndRenderMemos
+};
+
+export default ActivitySessionModule;

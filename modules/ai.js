@@ -7,13 +7,14 @@
  * 실제 배포 시에는 서버 레이어에서 AI API 키를 주입합니다.
  */
 
+
 (function (global) {
     const isDev = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV;
     let mockModulePromise = null;
 
     async function loadMockModule() {
         if (!mockModulePromise) {
-            mockModulePromise = import('./utils/mock-ai.js');
+            mockModulePromise = import('@utils/mock-ai.js');
         }
         return mockModulePromise;
     }
@@ -196,11 +197,10 @@
         global.AIClient = api;
     }
 
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = { AIClient: api };
-    }
-
     if (typeof console !== 'undefined') {
         console.log('[AIClient] 모듈이 초기화되었습니다. (isDev=%s)', isDev);
     }
 })(typeof window !== 'undefined' ? window : globalThis);
+
+export const AIClient = typeof window !== 'undefined' ? window.AIClient : undefined;
+export default AIClient;

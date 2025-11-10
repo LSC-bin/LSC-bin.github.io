@@ -370,13 +370,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 내보내기 (모듈 시스템 지원)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        initCloud,
-        loadCloudData,
-        analyzeWordFrequency,
-        createWordCloud
-    };
+const CloudModule = {
+    initCloud,
+    loadCloudData,
+    analyzeWordFrequency,
+    createWordCloud
+};
+
+if (typeof window !== 'undefined') {
+    window.CloudModule = Object.assign({}, window.CloudModule || {}, CloudModule);
+    Object.assign(window, CloudModule);
 }
+
+export {
+    initCloud,
+    loadCloudData,
+    analyzeWordFrequency,
+    createWordCloud
+};
+
+export default CloudModule;
 

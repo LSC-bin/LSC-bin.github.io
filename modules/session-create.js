@@ -3,7 +3,7 @@
  * 수업 게시물 생성 페이지 로직
  */
 
-import { AppUtils } from './utils/app-utils.js';
+import { AppUtils } from '@utils/app-utils.js';
 
 const AppUtilsRef = (typeof window !== 'undefined' && window.AppUtils) ? window.AppUtils : AppUtils;
 const {

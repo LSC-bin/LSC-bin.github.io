@@ -5,7 +5,7 @@
  * TODO: Firebase & OpenAI API 연결 시
  */
 
-import { AppUtils } from './utils/app-utils.js';
+import { AppUtils } from '@utils/app-utils.js';
 
 const AppUtilsRef = window.AppUtils || AppUtils;
 const {
@@ -695,13 +695,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 내보내기 (모듈 시스템 지원)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        initQuiz,
-        startQuiz,
-        handleSubmitQuiz,
-        generateAIFeedback
-    };
+const QuizModule = {
+    initQuiz,
+    startQuiz,
+    handleSubmitQuiz,
+    generateAIFeedback
+};
+
+if (typeof window !== 'undefined') {
+    window.QuizModule = Object.assign({}, window.QuizModule || {}, QuizModule);
+    Object.assign(window, QuizModule);
 }
+
+export { initQuiz, startQuiz, handleSubmitQuiz, generateAIFeedback };
+export default QuizModule;
 

@@ -277,5 +277,9 @@ const AppUtils = {
     showToast
 };
 
+if (typeof window !== 'undefined') {
+    window.AppUtils = Object.assign({}, window.AppUtils || {}, AppUtils);
+}
+
 export { AppUtils };
 export default AppUtils;

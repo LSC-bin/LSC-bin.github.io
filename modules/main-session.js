@@ -4,7 +4,7 @@
  * ClassBoard Design 인터랙션 로직 & 공통 함수
  */
 
-import { AppUtils } from './utils/app-utils.js';
+import { AppUtils } from '@utils/app-utils.js';
 
 // DOM 요소 선택
 const sidebarController = typeof window.initSidebar === 'function'
@@ -484,19 +484,13 @@ document.addEventListener('DOMContentLoaded', init);
  */
 
 // 날짜 포맷팅
-function formatDate(date) {
+function formatDateReadable(date) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(date).toLocaleDateString('ko-KR', options);
 }
 
-// 시간 포맷팅
-function formatTime(date) {
-    const options = { hour: '2-digit', minute: '2-digit' };
-    return new Date(date).toLocaleTimeString('ko-KR', options);
-}
-
 // 상대 시간 표시 (예: "2분 전")
-function getRelativeTime(date) {
+function getRelativeTimeLabel(date) {
     const now = new Date();
     const diff = now - new Date(date);
     const minutes = Math.floor(diff / 60000);
@@ -507,7 +501,7 @@ function getRelativeTime(date) {
     if (minutes < 60) return `${minutes}분 전`;
     if (hours < 24) return `${hours}시간 전`;
     if (days < 7) return `${days}일 전`;
-    return formatDate(date);
+    return formatDateReadable(date);
 }
 
 // 알림 표시 함수
@@ -1240,7 +1234,7 @@ function createNotificationElement(notification) {
         <div class="notification-content">
             <p>${escapeHtml(notification.title)}</p>
             ${bodyMarkup}
-            <span class="notification-time">${getRelativeTime(notification.createdAt)}</span>
+            <span class="notification-time">${getRelativeTimeLabel(notification.createdAt)}</span>
         </div>
     `;
 
@@ -1306,21 +1300,34 @@ function getNotificationIcon(type) {
     }
 }
 
-/**
- * 내보내기
- */
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        formatDate,
-        formatTime,
-        getRelativeTime,
-        showNotification,
-        showLoading,
-        hideLoading,
-        fadeIn,
-        fadeOut,
-        checkAuthAndRedirect,
-        loadProfileInfo
-    };
+const MainSessionModule = {
+    formatDate,
+    formatTime,
+    getRelativeTime,
+    showNotification,
+    showLoading,
+    hideLoading,
+    fadeIn,
+    fadeOut,
+    loadProfileInfo
+};
+
+if (typeof window !== 'undefined') {
+    window.MainSessionModule = Object.assign({}, window.MainSessionModule || {}, MainSessionModule);
+    Object.assign(window, MainSessionModule);
 }
+
+export {
+    formatDate,
+    formatTime,
+    getRelativeTime,
+    showNotification,
+    showLoading,
+    hideLoading,
+    fadeIn,
+    fadeOut,
+    loadProfileInfo
+};
+
+export default MainSessionModule;
 

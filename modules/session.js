@@ -4,7 +4,7 @@
  * Activity + Ask 통합 UI 리디자인
  */
 
-import { AppUtils } from './utils/app-utils.js';
+import { AppUtils } from '@utils/app-utils.js';
 
 const AuthServiceRef = window.AuthService || {};
 const AppUtilsRef = window.AppUtils || AppUtils;
