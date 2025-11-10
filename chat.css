@@ -1,0 +1,363 @@
+@charset "UTF-8";
+:root {
+  --color-surface: #ffffff;
+  --color-background: #f5f7fb;
+  --color-primary: #3c91e6;
+  --color-secondary: #845ef7;
+  --color-warning: #ffce26;
+  --color-accent: #fd7238;
+  --color-danger: #db504a;
+  --color-muted: #d4d7e5;
+  --color-dark: #342e37;
+  --color-text-secondary: #5b6c8f;
+  --font-poppins: Poppins, sans-serif;
+  --font-lato: Lato, sans-serif;
+  --font-noto: Noto Sans KR, sans-serif;
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-bg-dark: rgba(52, 46, 55, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-blur: blur(15px);
+  --shadow-soft: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+  --shadow-medium: 0 12px 48px 0 rgba(31, 38, 135, 0.15);
+  --shadow-strong: 0 18px 64px 0 rgba(31, 38, 135, 0.25);
+  --transition-fast: 0.2s ease-in-out;
+  --transition-base: 0.3s ease-in-out;
+  --transition-slow: 0.5s ease-in-out;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  /* Backward compatible aliases */
+  --light: var(--color-surface);
+  --dark: var(--color-dark);
+  --blue: var(--color-primary);
+  --yellow: var(--color-warning);
+  --orange: var(--color-accent);
+  --grey: var(--color-muted);
+  --red: var(--color-danger);
+}
+
+/**
+ * chat.css
+ * AI ClassBoard - 단체 채팅 + 워드클라우드 페이지 전용 스타일
+ */
+/* ===================================
+   기본 변수
+   =================================== */
+body {
+  font-family: var(--font-noto), var(--font-poppins), sans-serif;
+  margin: 0;
+  background: linear-gradient(135deg, rgba(60, 145, 230, 0.08), rgba(132, 94, 247, 0.08));
+  color: var(--color-dark);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: var(--spacing-sm);
+  min-height: 100vh;
+}
+
+body.dark {
+  background: linear-gradient(135deg, #1e1e2e, #2a2a3e);
+  color: var(--color-surface);
+}
+
+/* ===================================
+   헤더
+   =================================== */
+.chat-header {
+  text-align: center;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-medium);
+}
+
+body.dark .chat-header {
+  background: rgba(45, 38, 40, 0.8);
+  color: var(--color-surface);
+}
+
+.chat-header h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+body.dark .chat-header h2 {
+  color: var(--color-surface);
+}
+
+.chat-header p {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+}
+
+body.dark .chat-header p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ===================================
+   레이아웃 (왼쪽 2/3, 오른쪽 1/3)
+   =================================== */
+.chat-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  flex: 1;
+  overflow: hidden;
+}
+
+@media (max-width: 1024px) {
+  .chat-layout {
+    grid-template-columns: 1fr;
+  }
+}
+/* ===================================
+   공통 패널 스타일
+   =================================== */
+.wordcloud-panel, .chat-panel {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-medium);
+  backdrop-filter: blur(12px);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: var(--spacing-sm);
+  overflow: hidden;
+}
+
+body.dark .wordcloud-panel,
+body.dark .chat-panel {
+  background: rgba(45, 38, 40, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.wordcloud-panel h3,
+.chat-panel h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+body.dark .wordcloud-panel h3,
+body.dark .chat-panel h3 {
+  color: var(--color-surface);
+}
+
+/* ===================================
+   워드클라우드 패널
+   =================================== */
+.wordcloud-panel {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+
+.wordcloud-panel canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ===================================
+   채팅 패널
+   =================================== */
+.chat-window {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  padding-bottom: 10px;
+}
+
+.chat-window::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-window::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-window::-webkit-scrollbar-thumb {
+  background: var(--grey);
+  border-radius: 3px;
+}
+
+body.dark .chat-window::-webkit-scrollbar-thumb {
+  background: #555;
+}
+
+.chat-bubble {
+  max-width: 80%;
+  padding: 12px 16px;
+  border-radius: 20px;
+  word-break: break-word;
+  animation: fadeIn 0.3s ease-in-out;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.chat-bubble.self {
+  background: var(--blue);
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-bubble.other {
+  background: #e9e9e9;
+  color: black;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+body.dark .chat-bubble.other {
+  background: #444;
+  color: var(--color-surface);
+}
+
+.chat-input-area {
+  display: flex;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--grey);
+}
+
+body.dark .chat-input-area {
+  border-top-color: #444;
+}
+
+.chat-input-area input {
+  flex: 1;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 16px;
+  background: var(--grey);
+  outline: none;
+  font-size: 0.95rem;
+}
+
+body.dark .chat-input-area input {
+  background: #444;
+  color: var(--color-surface);
+}
+
+.chat-input-area input:focus {
+  outline: 2px solid var(--blue);
+}
+
+.chat-input-area button {
+  border: none;
+  background: var(--blue);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 600;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chat-input-area button:hover {
+  background: #2b6dc5;
+  transform: translateY(-2px);
+}
+
+/* ===================================
+   홈 버튼
+   =================================== */
+.home-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--blue);
+  color: white;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(60, 145, 230, 0.3);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.home-btn i {
+  font-size: 1.5rem;
+}
+
+.home-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(60, 145, 230, 0.4);
+}
+
+/* ===================================
+   애니메이션
+   =================================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* ===================================
+   빈 상태
+   =================================== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem;
+  color: #999;
+}
+
+body.dark .empty-state {
+  color: var(--color-text-secondary);
+}
+
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  margin: 0.5rem 0;
+}
+
+body.dark .empty-state p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/*# sourceMappingURL=chat.css.map */
