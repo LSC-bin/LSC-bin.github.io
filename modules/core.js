@@ -4,7 +4,7 @@
  * 상태 관리, 사이드바, 다크모드 등 공통 기능
  */
 
-import { AppUtils } from '@utils/app-utils.js';
+import { AppUtils } from '../utils/app-utils.js';
 
 const AuthServiceRef = typeof window !== 'undefined' ? (window.AuthService || {}) : {};
 const AppUtilsRef = typeof window !== 'undefined' ? (window.AppUtils || AppUtils) : AppUtils;

@@ -1,6 +1,6 @@
-import '@utils/auth.js';
-import '@modules/dialog.js';
-import '@utils/common.js';
+import '../../utils/auth.js';
+import '../../modules/dialog.js';
+import '../../utils/common.js';
 
 /**
  * index.js

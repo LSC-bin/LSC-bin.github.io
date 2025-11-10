@@ -4,7 +4,7 @@
  * ClassBoard Design 인터랙션 로직 & 공통 함수
  */
 
-import { AppUtils } from '@utils/app-utils.js';
+import { AppUtils } from '../utils/app-utils.js';
 
 // DOM 요소 선택
 const sidebarController = typeof window.initSidebar === 'function'

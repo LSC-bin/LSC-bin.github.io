@@ -14,7 +14,7 @@
 
     async function loadMockModule() {
         if (!mockModulePromise) {
-            mockModulePromise = import('@utils/mock-ai.js');
+            mockModulePromise = import('../utils/mock-ai.js');
         }
         return mockModulePromise;
     }

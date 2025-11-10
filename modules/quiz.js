@@ -5,7 +5,7 @@
  * TODO: Firebase & OpenAI API 연결 시
  */
 
-import { AppUtils } from '@utils/app-utils.js';
+import { AppUtils } from '../utils/app-utils.js';
 
 const AppUtilsRef = window.AppUtils || AppUtils;
 const {

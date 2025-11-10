@@ -4,7 +4,7 @@
  * 클래스 선택 기능 구현 - localStorage 기반
  */
 
-import { AppUtils } from '@utils/app-utils.js';
+import { AppUtils } from '../utils/app-utils.js';
 
 const AppUtilsRef = window.AppUtils || AppUtils;
 const {

@@ -4,7 +4,7 @@
  * Firebase 구조 고려, 현재는 localStorage 기반
  */
 
-import { AppUtils } from '@utils/app-utils.js';
+import { AppUtils } from '../utils/app-utils.js';
 
 const AppUtilsRef = (typeof window !== 'undefined' && window.AppUtils) ? window.AppUtils : AppUtils;
 const {

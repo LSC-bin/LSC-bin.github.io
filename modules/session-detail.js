@@ -3,7 +3,7 @@
  * 수업 상세 페이지 로직 - sessionId 기반 통합 관리
  */
 
-import { AppUtils } from '@utils/app-utils.js';
+import { AppUtils } from '../utils/app-utils.js';
 
 const AppUtilsRef = window.AppUtils || AppUtils;
 const {
