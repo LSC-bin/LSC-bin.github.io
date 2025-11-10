@@ -94,7 +94,7 @@ function saveSession(title, date, number, sessionId, sessions) {
     setStoredArray('sessions', filteredSessions);
 
     showAlert('수업 게시물이 저장되었습니다!', 'success').then(() => {
-        window.location.href = 'index.html';
+        window.location.href = 'main-session.html';
     });
 }
 

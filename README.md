@@ -56,7 +56,7 @@
 
 ### 2. Firebase 설정 추가
 
-`index.html` 파일의 Firebase 설정 부분에 실제 프로젝트 정보 입력:
+`main-session.html` 파일의 Firebase 설정 부분에 실제 프로젝트 정보 입력:
 
 ```javascript
 const firebaseConfig = {
@@ -178,6 +178,9 @@ LSC-bin.github.io/
 ├── chat.html
 ├── chat.scss
 ├── index.html
+├── index.js
+├── main-session.html
+├── main-session.js
 ├── style.scss
 ├── session.html
 ├── session.scss

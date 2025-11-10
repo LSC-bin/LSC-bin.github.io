@@ -397,7 +397,7 @@ function handleLogout() {
                 removeStoredValue('selectedClass');
                 removeStoredValue('selectedClassId');
                 // 로그인 페이지로 이동
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             });
     });
 }

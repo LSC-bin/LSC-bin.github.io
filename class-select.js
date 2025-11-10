@@ -47,7 +47,7 @@ function handleLogout() {
         localStorage.removeItem('selectedClassId');
         
         // 로그인 페이지로 이동
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
     });
 }
 
@@ -79,7 +79,7 @@ function initClassSelect() {
         // fallback
         const isLoggedIn = localStorage.getItem('isLoggedIn');
         if (!isLoggedIn || isLoggedIn !== 'true') {
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
             return;
         }
     }
@@ -99,7 +99,7 @@ function initClassSelect() {
     const backBtn = document.getElementById('back-btn');
     if (backBtn) {
         backBtn.addEventListener('click', () => {
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         });
     }
 }
@@ -287,7 +287,7 @@ function handleClassSelect(card) {
 
     // 대시보드로 이동
     setTimeout(() => {
-        window.location.href = 'index.html';
+        window.location.href = 'main-session.html';
     }, 1000);
 }
 
