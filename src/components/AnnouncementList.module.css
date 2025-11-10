@@ -1,0 +1,134 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.badge {
+  background: var(--yellow);
+  color: #332;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-xl);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-soft);
+}
+
+:global(body.dark) .item {
+  background: rgba(52, 46, 55, 0.5);
+}
+
+.itemTitle {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.itemDate {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+:global(body.dark) .itemDate {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.button {
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-md);
+  background: var(--blue);
+  color: white;
+  box-shadow: var(--shadow-soft);
+}
+
+.secondaryButton {
+  background: rgba(15, 23, 42, 0.05);
+  color: var(--dark);
+}
+
+:global(body.dark) .secondaryButton {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--light);
+}
+
+.empty {
+  text-align: center;
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 30;
+}
+
+.modal {
+  width: min(420px, 90vw);
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-medium);
+}
+
+:global(body.dark) .modal {
+  background: rgba(52, 46, 55, 0.9);
+  color: var(--light);
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal input,
+.modal textarea {
+  width: 100%;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+:global(body.dark) .modal input,
+:global(body.dark) .modal textarea {
+  background: rgba(52, 46, 55, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--light);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}

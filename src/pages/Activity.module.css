@@ -1,0 +1,71 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.board {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-soft);
+}
+
+:global(body.dark) .board {
+  background: rgba(52, 46, 55, 0.6);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+}
+
+:global(body.dark) th,
+:global(body.dark) td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-xl);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.statusProgress {
+  background: rgba(60, 145, 230, 0.15);
+  color: var(--blue);
+}
+
+.statusComplete {
+  background: rgba(16, 185, 129, 0.15);
+  color: #047857;
+}
+
+.statusPending {
+  background: rgba(253, 114, 56, 0.15);
+  color: var(--orange);
+}
+
+.meta {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+:global(body.dark) .meta {
+  color: rgba(255, 255, 255, 0.7);
+}
