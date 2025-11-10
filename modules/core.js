@@ -4,7 +4,7 @@
  * 상태 관리, 사이드바, 다크모드 등 공통 기능
  */
 
-import { AppUtils } from './utils/app-utils.js';
+import { AppUtils } from '@utils/app-utils.js';
 
 const AuthServiceRef = typeof window !== 'undefined' ? (window.AuthService || {}) : {};
 const AppUtilsRef = typeof window !== 'undefined' ? (window.AppUtils || AppUtils) : AppUtils;
@@ -155,26 +155,34 @@ async function initApp(options = {}) {
     }
 }
 
+const CoreModule = {
+    checkLoginStatus,
+    checkClassSelected,
+    checkAuthAndRedirect,
+    toggleDarkMode,
+    loadClassInfo,
+    generateClassCode,
+    initApp
+};
+
 if (typeof window !== 'undefined') {
     window.AppUtils ??= AppUtils;
-    window.initApp = initApp;
+    window.CoreModule = Object.assign({}, window.CoreModule || {}, CoreModule);
+    Object.assign(window, CoreModule);
     if (typeof window.initSidebar === 'function') {
         window.initSidebar(window.document.querySelector('.sidebar'));
     }
 }
 
-/**
- * 내보내기
- */
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        checkLoginStatus,
-        checkClassSelected,
-        checkAuthAndRedirect,
-        toggleDarkMode,
-        loadClassInfo,
-        generateClassCode,
-        initApp
-    };
-}
+export {
+    checkLoginStatus,
+    checkClassSelected,
+    checkAuthAndRedirect,
+    toggleDarkMode,
+    loadClassInfo,
+    generateClassCode,
+    initApp
+};
+
+export default CoreModule;
 

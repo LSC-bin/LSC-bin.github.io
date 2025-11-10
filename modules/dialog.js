@@ -176,8 +176,11 @@ function showConfirm(message, type = 'info') {
     });
 }
 
-// 내보내기
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { showAlert, showConfirm };
+if (typeof window !== 'undefined') {
+    window.showAlert = showAlert;
+    window.showConfirm = showConfirm;
 }
+
+export { showAlert, showConfirm };
+export default { showAlert, showConfirm };
 

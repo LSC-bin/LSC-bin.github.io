@@ -11,7 +11,7 @@
 // sessions/{classId}/chat/messages/{messageId}
 // { text, sender, timestamp }
 
-import { AppUtils } from './utils/app-utils.js';
+import { AppUtils } from '@utils/app-utils.js';
 
 const AppUtilsRef = (typeof window !== 'undefined' && window.AppUtils) ? window.AppUtils : AppUtils;
 const {

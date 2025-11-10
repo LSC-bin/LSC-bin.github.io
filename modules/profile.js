@@ -225,13 +225,18 @@ document.addEventListener('DOMContentLoaded', () => {
     initProfile();
 });
 
-// 내보내기
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        initProfile,
-        loadProfileData,
-        handleSaveProfile
-    };
+const ProfileModule = {
+    initProfile,
+    loadProfileData,
+    handleSaveProfile
+};
+
+if (typeof window !== 'undefined') {
+    window.ProfileModule = Object.assign({}, window.ProfileModule || {}, ProfileModule);
+    Object.assign(window, ProfileModule);
 }
+
+export { initProfile, loadProfileData, handleSaveProfile };
+export default ProfileModule;
 
 

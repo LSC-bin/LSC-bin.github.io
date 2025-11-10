@@ -3,7 +3,7 @@
  * 수업 상세 페이지 로직 - sessionId 기반 통합 관리
  */
 
-import { AppUtils } from './utils/app-utils.js';
+import { AppUtils } from '@utils/app-utils.js';
 
 const AppUtilsRef = window.AppUtils || AppUtils;
 const {
@@ -213,4 +213,21 @@ function showReadOnlyModeIndicator() {
         header.appendChild(indicator);
     }
 }
+
+const SessionDetailModule = {
+    getCurrentSessionId,
+    isReadOnly,
+    isPastSession,
+    showReadOnlyModeIndicator
+};
+
+if (typeof window !== 'undefined') {
+    window.SessionDetailModule = Object.assign({}, window.SessionDetailModule || {}, SessionDetailModule);
+    window.getCurrentSessionId = getCurrentSessionId;
+    window.isReadOnlySession = isReadOnly;
+    window.isPastSession = isPastSession;
+}
+
+export { getCurrentSessionId, isReadOnly, isPastSession, showReadOnlyModeIndicator };
+export default SessionDetailModule;
 

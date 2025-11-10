@@ -5,7 +5,7 @@
  * TODO: Firebase 연결 시
  */
 
-import { AppUtils } from './utils/app-utils.js';
+import { AppUtils } from '@utils/app-utils.js';
 
 const AppUtilsRef = window.AppUtils || AppUtils;
 const {
@@ -984,12 +984,17 @@ window.removeAskImagePreview = removeAskImagePreview;
 //     }
 // });
 
-// 내보내기 (모듈 시스템 지원)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        initAsk,
-        handleSendMessage,
-        generateQuestionSummary
-    };
+const AskSessionModule = {
+    initAsk,
+    handleSendMessage,
+    generateQuestionSummary
+};
+
+if (typeof window !== 'undefined') {
+    window.AskSessionModule = Object.assign({}, window.AskSessionModule || {}, AskSessionModule);
+    Object.assign(window, AskSessionModule);
 }
+
+export { initAsk, handleSendMessage, generateQuestionSummary };
+export default AskSessionModule;
 

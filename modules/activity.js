@@ -5,7 +5,7 @@
  * TODO: Firebase 연결 시
  */
 
-import { AppUtils } from './utils/app-utils.js';
+import { AppUtils } from '@utils/app-utils.js';
 
 const AppUtilsRef = window.AppUtils || AppUtils;
 const {
@@ -1003,15 +1003,28 @@ document.addEventListener('DOMContentLoaded', () => {
 window.generateAIFeedback = generateAIFeedback;
 window.viewPostDetail = viewPostDetail;
 
-// 내보내기 (모듈 시스템 지원)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        initActivity,
-        toggleLike,
-        toggleComments,
-        submitComment,
-        removeImagePreview,
-        generateAIFeedback
-    };
+const ActivityModule = {
+    initActivity,
+    toggleLike,
+    toggleComments,
+    submitComment,
+    removeImagePreview,
+    generateAIFeedback
+};
+
+if (typeof window !== 'undefined') {
+    window.ActivityModule = Object.assign({}, window.ActivityModule || {}, ActivityModule);
+    Object.assign(window, ActivityModule);
 }
+
+export {
+    initActivity,
+    toggleLike,
+    toggleComments,
+    submitComment,
+    removeImagePreview,
+    generateAIFeedback
+};
+
+export default ActivityModule;
 
