@@ -5,11 +5,10 @@
  */
 
 // DOM 요소 선택
-const sidebar = document.getElementById('sidebar');
-const menuBtn = document.getElementById('menu-btn');
-const navbarSidebarToggle = document.getElementById('navbar-sidebar-toggle');
-const switchMode = document.getElementById('switch-mode');
-const body = document.body;
+const sidebarController = typeof window.initSidebar === 'function'
+    ? window.initSidebar(document.querySelector('.sidebar'))
+    : null;
+const sidebar = sidebarController?.root || document.getElementById('sidebar');
 
 // 유틸리티 모듈 참조
 const AuthServiceRef = window.AuthService || {};
@@ -82,8 +81,13 @@ menuItems.forEach(item => {
         item.classList.add('active');
         
         // 모바일에서 메뉴 클릭 시 사이드바 닫기
-        if (window.innerWidth <= 768) {
-            sidebar.classList.remove('active');
+        const viewportWidth = typeof window.innerWidth === 'number' ? window.innerWidth : Infinity;
+        if (viewportWidth <= 768) {
+            if (sidebarController && typeof sidebarController.closeMobile === 'function') {
+                sidebarController.closeMobile();
+            } else if (sidebar) {
+                sidebar.classList.remove('active');
+            }
         }
 
         // 페이지 전환
@@ -166,15 +170,6 @@ function switchPage(pageId) {
         }
     }
 }
-
-/**
- * 반응형 사이드바 처리
- */
-window.addEventListener('resize', () => {
-    if (window.innerWidth > 768) {
-        sidebar.classList.remove('active');
-    }
-});
 
 /**
  * 할 일 목록 필터링
