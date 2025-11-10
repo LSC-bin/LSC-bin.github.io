@@ -3,6 +3,23 @@
  * 수업 상세 페이지 로직 - sessionId 기반 통합 관리
  */
 
+const AppUtilsRef = window.AppUtils || {};
+const {
+    formatDate: formatDateUtil = (date, options) => new Date(date).toLocaleDateString('ko-KR', options),
+    showToast: showToastUtil = () => {},
+    getStoredArray: getStoredArrayUtil = (key, fallback = []) => {
+        try {
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        } catch {
+            return fallback;
+        }
+    }
+} = AppUtilsRef;
+
+const formatDateFromUtils = (date, options) => formatDateUtil(date, options);
+const showToast = (...args) => showToastUtil(...args);
+const getStoredArray = (key, fallback = []) => getStoredArrayUtil(key, fallback);
+
 // 전역 변수: 현재 세션 ID
 let currentSessionId = null;
 let isReadOnlyMode = false; // 보기 전용 모드 플래그
@@ -21,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // localStorage에서 세션 정보 가져오기
-    const sessions = JSON.parse(localStorage.getItem('sessions') || '[]');
+    const sessions = getStoredArray('sessions');
     const session = sessions.find(s => s.id === currentSessionId);
 
     if (!session) {
@@ -41,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sessionClassNameEl) {
         sessionClassNameEl.textContent = className;
     }
-    document.getElementById('session-date').textContent = formatDate(session.date);
+    document.getElementById('session-date').textContent = formatDateFromUtils(session.date, { style: 'literal' });
     document.getElementById('session-number').textContent = `${session.number}차시`;
 
     // 보기 전용 모드 UI 표시
@@ -152,46 +169,10 @@ function getCurrentSessionId() {
 }
 
 /**
- * 토스트 메시지 표시
- */
-function showToast(message, type = 'success') {
-    const toastContainer = document.getElementById('toast-container');
-    if (!toastContainer) return;
-
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.innerHTML = `
-        <div class="toast-content">
-            <i class="bx ${type === 'success' ? 'bx-check-circle' : type === 'error' ? 'bx-error-circle' : 'bx-info-circle'}"></i>
-            <span>${message}</span>
-        </div>
-    `;
-
-    toastContainer.appendChild(toast);
-
-    // 애니메이션
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 10);
-
-    // 자동 제거
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-            toast.remove();
-        }, 300);
-    }, 3000);
-}
-
-/**
  * 날짜 포맷팅
  */
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}년 ${month}월 ${day}일`;
+    return formatDateFromUtils(dateString, { style: 'literal' });
 }
 
 /**

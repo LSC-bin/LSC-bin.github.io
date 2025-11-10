@@ -11,6 +11,53 @@ const navbarSidebarToggle = document.getElementById('navbar-sidebar-toggle');
 const switchMode = document.getElementById('switch-mode');
 const body = document.body;
 
+// 유틸리티 모듈 참조
+const AppUtilsRef = window.AppUtils || {};
+const {
+    escapeHtml: escapeHtmlUtil = (text) => String(text ?? ''),
+    formatDate: formatDateUtil = (date, options) => new Date(date).toLocaleDateString('ko-KR', options),
+    formatTime: formatTimeUtil = (date, options) => new Date(date).toLocaleTimeString('ko-KR', options || { hour: '2-digit', minute: '2-digit' }),
+    getRelativeTime: getRelativeTimeUtil = () => '',
+    getStoredArray: getStoredArrayUtil = (key, fallback = []) => {
+        try {
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        } catch {
+            return fallback;
+        }
+    },
+    setStoredArray: setStoredArrayUtil = (key, value) => {
+        try {
+            localStorage.setItem(key, JSON.stringify(value || []));
+        } catch (err) {
+            console.warn('[AppUtils] Failed to persist data', err);
+        }
+    }
+} = AppUtilsRef;
+
+function escapeHtml(text) {
+    return escapeHtmlUtil(text);
+}
+
+function formatDate(date, options) {
+    return formatDateUtil(date, options);
+}
+
+function formatTime(date, options) {
+    return formatTimeUtil(date, options);
+}
+
+function getRelativeTime(date, options) {
+    return getRelativeTimeUtil(date, options);
+}
+
+function getStoredArray(key, fallback = []) {
+    return getStoredArrayUtil(key, fallback);
+}
+
+function setStoredArray(key, value) {
+    setStoredArrayUtil(key, value);
+}
+
 // 사이드바 초기화는 core.js의 initSidebar() 사용
 
 /**
@@ -535,7 +582,7 @@ function loadSessions() {
     if (!sessionsGrid) return;
 
     // localStorage에서 세션 목록 가져오기
-    const sessions = JSON.parse(localStorage.getItem('sessions') || '[]');
+    const sessions = getStoredArray('sessions');
 
     if (sessions.length === 0) {
         sessionsGrid.innerHTML = `
@@ -599,7 +646,7 @@ function loadSessionsForBoard(tableBodyId) {
     if (!tableBody) return;
 
     // localStorage에서 세션 목록 가져오기 (모든 세션 표시)
-    const sessions = JSON.parse(localStorage.getItem('sessions') || '[]');
+    const sessions = getStoredArray('sessions');
 
     if (sessions.length === 0) {
         tableBody.innerHTML = `
@@ -659,31 +706,11 @@ function loadSessionsForBoard(tableBodyId) {
  * 세션 날짜 포맷팅 (게시판 테이블용)
  */
 function formatSessionDateForTable(dateString) {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    return formatDate(dateString, { style: 'iso' });
 }
 
-/**
- * 세션 날짜 포맷팅 (기존용 - 호환성 유지)
- */
 function formatSessionDate(dateString) {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}년 ${month}월 ${day}일`;
-}
-
-/**
- * HTML 이스케이프
- */
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+    return formatDate(dateString, { style: 'literal' });
 }
 
 /**
@@ -720,9 +747,9 @@ function deleteSession(sessionId, tableBodyId) {
         if (!confirmed) return;
         
         // localStorage에서 세션 삭제
-        const sessions = JSON.parse(localStorage.getItem('sessions') || '[]');
+        const sessions = getStoredArray('sessions');
         const filteredSessions = sessions.filter(s => s.id !== sessionId);
-        localStorage.setItem('sessions', JSON.stringify(filteredSessions));
+        setStoredArray('sessions', filteredSessions);
         
         // 테이블 새로고침
         if (typeof loadSessionsForBoard === 'function') {

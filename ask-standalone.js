@@ -11,6 +11,30 @@
 // ===================================
 // WordCloud - 고정 폰트 크기
 // ===================================
+const AppUtilsRef = window.AppUtils || {};
+const {
+    escapeHtml: escapeHtmlUtil = (text) => String(text ?? ''),
+    getStoredData: getStoredDataUtil = (key, fallback) => {
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : fallback;
+        } catch {
+            return fallback;
+        }
+    },
+    setStoredData: setStoredDataUtil = (key, value) => {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch (err) {
+            console.warn('[AppUtils] Failed to persist ask standalone data', err);
+        }
+    }
+} = AppUtilsRef;
+
+const escapeHtml = (text) => escapeHtmlUtil(text);
+const getStoredData = (key, fallback) => getStoredDataUtil(key, fallback);
+const setStoredData = (key, value) => setStoredDataUtil(key, value);
+
 let wordCloudWords = [];
 
 // 고정 폰트 크기 상수
@@ -213,29 +237,19 @@ function loadChatHistory() {
     
     if (sessionId) {
         // 세션별 채팅 불러오기
-        const saved = localStorage.getItem(`session_messages_${sessionId}`);
-        if (saved) {
-            try {
-                chatHistory = JSON.parse(saved);
-                renderChatMessages();
-            } catch (e) {
-                console.error('채팅 데이터 로드 오류:', e);
-                initializeDummyDataForSession(sessionId);
-            }
+        const saved = getStoredData(`session_messages_${sessionId}`, null);
+        if (Array.isArray(saved)) {
+            chatHistory = saved;
+            renderChatMessages();
         } else {
             initializeDummyDataForSession(sessionId);
         }
     } else {
         // 전체 채팅 불러오기 (기존 방식)
-        const saved = localStorage.getItem('askChatHistory');
-        if (saved) {
-            try {
-                chatHistory = JSON.parse(saved);
-                renderChatMessages();
-            } catch (e) {
-                console.error('채팅 데이터 로드 오류:', e);
-                initializeDummyData();
-            }
+        const saved = getStoredData('askChatHistory', null);
+        if (Array.isArray(saved)) {
+            chatHistory = saved;
+            renderChatMessages();
         } else {
             initializeDummyData();
         }
@@ -276,13 +290,13 @@ function saveChatHistory() {
         saveChatHistoryForSession(sessionId);
     } else {
         // 전체 채팅 저장
-        localStorage.setItem('askChatHistory', JSON.stringify(chatHistory));
+    setStoredData('askChatHistory', chatHistory);
     }
 }
 
 // 세션별 채팅 저장
 function saveChatHistoryForSession(sessionId) {
-    localStorage.setItem(`session_messages_${sessionId}`, JSON.stringify(chatHistory));
+    setStoredData(`session_messages_${sessionId}`, chatHistory);
 }
 
 // 채팅 메시지 렌더링 - 카카오톡 단톡방 스타일
@@ -366,12 +380,6 @@ if (sendChat && chatInput) {
 function getUserName() {
     const userName = localStorage.getItem('userName');
     return userName || '익명';
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
 }
 
 // ===================================

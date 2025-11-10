@@ -5,6 +5,27 @@
  * TODO: Firebase & OpenAI API 연결 시
  */
 
+const AppUtilsRef = window.AppUtils || {};
+const {
+    getStoredArray: getStoredArrayUtil = (key, fallback = []) => {
+        try {
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        } catch {
+            return fallback;
+        }
+    },
+    setStoredArray: setStoredArrayUtil = (key, value) => {
+        try {
+            localStorage.setItem(key, JSON.stringify(value || []));
+        } catch (err) {
+            console.warn('[AppUtils] Failed to persist quiz data', err);
+        }
+    }
+} = AppUtilsRef;
+
+const getStoredArray = (key, fallback = []) => getStoredArrayUtil(key, fallback);
+const setStoredArray = (key, value) => setStoredArrayUtil(key, value);
+
 // 전역 변수
 let currentQuiz = null;
 let currentAnswers = {};
@@ -103,7 +124,7 @@ function initQuiz() {
  */
 function loadQuizListForSession(sessionId) {
     // localStorage에서 해당 sessionId의 퀴즈 불러오기
-    const storedQuizzes = JSON.parse(localStorage.getItem(`session_quizzes_${sessionId}`) || '[]');
+    const storedQuizzes = getStoredArray(`session_quizzes_${sessionId}`);
     
     if (storedQuizzes.length === 0) {
         // 기본 퀴즈 데이터
@@ -439,9 +460,9 @@ async function handleSubmitQuiz() {
             submittedAt: new Date().toISOString()
         };
         
-        const storedResults = JSON.parse(localStorage.getItem(`session_quiz_results_${sessionId}`) || '[]');
+        const storedResults = getStoredArray(`session_quiz_results_${sessionId}`);
         storedResults.push(quizResult);
-        localStorage.setItem(`session_quiz_results_${sessionId}`, JSON.stringify(storedResults));
+        setStoredArray(`session_quiz_results_${sessionId}`, storedResults);
         
         // 저장 토스트 메시지
         if (typeof showToast === 'function') {
