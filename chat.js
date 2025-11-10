@@ -49,6 +49,12 @@ const currentUser = {
     name: localStorage.getItem('userName') || '익명'
 };
 
+const AI_SENDER_NAME = 'AI 어시스턴트';
+
+function getAIClient() {
+    return typeof window !== 'undefined' ? window.AIClient : null;
+}
+
 // DOM 요소
 const chatMessages = document.getElementById("chatMessages");
 const chatInput = document.getElementById("chatInput");
@@ -134,36 +140,73 @@ function handleSendMessage() {
     saveChatHistory();
     renderChat();
     
-    // 테스트용 더미 응답
-    setTimeout(() => {
-        const fakeUsers = [
-            "학생A", "학생B", "학생C", "학생D", "학생E",
-            "김철수", "이영희", "박민수", "정수진", "최도현"
-        ];
-        const fakeResponses = [
-            "좋은 의견이에요!",
-            "공감합니다!",
-            "정말 흥미롭네요!",
-            "그게 궁금했어요!",
-            "맞아요!",
-            "흥미로운 주제네요",
-            "좋은 질문입니다",
-            "더 자세히 말씀해주세요"
-        ];
-        
-        const randomUser = fakeUsers[Math.floor(Math.random() * fakeUsers.length)];
-        const randomResponse = fakeResponses[Math.floor(Math.random() * fakeResponses.length)];
-        
-        chatMessagesData.push({
-            id: generateId('msg'),
-            sender: randomUser,
-            text: randomResponse,
-            timestamp: new Date()
-        });
-        
-        saveChatHistory();
-        renderChat();
-    }, 1200);
+    triggerAIResponse();
+}
+
+async function triggerAIResponse() {
+    const aiClient = getAIClient();
+    if (!aiClient || typeof aiClient.getChatReply !== 'function') {
+        console.warn('[chat] AIClient가 로드되지 않았습니다.');
+        return;
+    }
+
+    const conversation = chatMessagesData.map((message) => ({
+        sender: message.sender,
+        role: message.sender === AI_SENDER_NAME ? 'assistant' : 'user',
+        text: message.text
+    }));
+
+    const placeholderId = generateId('msg');
+    chatMessagesData.push({
+        id: placeholderId,
+        sender: AI_SENDER_NAME,
+        text: 'AI 응답 생성 중...',
+        timestamp: new Date(),
+        isPlaceholder: true
+    });
+    renderChat();
+
+    try {
+        const reply = await aiClient.getChatReply({ conversation });
+        const index = chatMessagesData.findIndex((msg) => msg.id === placeholderId);
+        if (index !== -1) {
+            chatMessagesData[index] = {
+                id: placeholderId,
+                sender: AI_SENDER_NAME,
+                text: reply,
+                timestamp: new Date()
+            };
+        } else {
+            chatMessagesData.push({
+                id: generateId('msg'),
+                sender: AI_SENDER_NAME,
+                text: reply,
+                timestamp: new Date()
+            });
+        }
+    } catch (error) {
+        console.error('[chat] AI 응답 생성 실패:', error);
+        const index = chatMessagesData.findIndex((msg) => msg.id === placeholderId);
+        const fallbackText = 'AI 응답을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';
+        if (index !== -1) {
+            chatMessagesData[index] = {
+                id: placeholderId,
+                sender: AI_SENDER_NAME,
+                text: fallbackText,
+                timestamp: new Date()
+            };
+        } else {
+            chatMessagesData.push({
+                id: generateId('msg'),
+                sender: AI_SENDER_NAME,
+                text: fallbackText,
+                timestamp: new Date()
+            });
+        }
+    }
+
+    saveChatHistory();
+    renderChat();
 }
 
 // ===================================
