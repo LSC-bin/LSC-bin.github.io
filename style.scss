@@ -1,43 +1,15 @@
+@use './styles/tokens';
+@use './styles/mixins';
+
+@include tokens.inject_root();
+
 /* ===================================
    ClassBoard Design 2.0 - Complete Redesign
    Glassmorphism + Soft Shadow + Rounded Layout
    =================================== */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
 
-:root {
-    --light: #F9F9F9;
-    --blue: #3C91E6;
-    --yellow: #FFCE26;
-    --orange: #FD7238;
-    --grey: #EEE;
-    --dark: #342E37;
-    --red: #DB504A;
-    --poppins: 'Poppins', sans-serif;
-    --lato: 'Lato', sans-serif;
-    --noto-sans: 'Noto Sans KR', sans-serif;
-    
-    /* Glassmorphism */
-    --glass-bg: rgba(255, 255, 255, 0.25);
-    --glass-bg-dark: rgba(52, 46, 55, 0.25);
-    --glass-blur: blur(15px);
-    --glass-border: rgba(255, 255, 255, 0.18);
-    
-    /* Shadows */
-    --shadow-soft: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-    --shadow-medium: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-    --shadow-strong: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
-    
-    /* Transitions */
-    --transition-base: 0.3s ease-in-out;
-    --transition-fast: 0.2s ease-in-out;
-    --transition-slow: 0.5s ease-in-out;
-    
-    /* Border Radius */
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
-}
+
 
 /* ===================================
    Reset & Base Styles
@@ -49,18 +21,18 @@
 }
 
 body {
-    font-family: var(--poppins), var(--noto-sans), sans-serif;
+    font-family: var(--font-poppins), var(--font-noto), sans-serif;
     background: linear-gradient(135deg, rgba(60, 145, 230, 0.05) 0%, rgba(253, 114, 56, 0.05) 100%);
     background-attachment: fixed;
-    color: var(--dark);
+    color: var(--color-dark);
     transition: background var(--transition-base), color var(--transition-base);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
 body.dark {
-    background: var(--dark);
-    color: var(--light);
+    background: var(--color-dark);
+    color: var(--color-surface);
 }
 
 /* ===================================
@@ -72,14 +44,12 @@ aside#sidebar {
     top: 0;
     height: 100vh;
     width: 220px;
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
+    @include mixins.glass-panel(var(--glass-bg), var(--glass-border));
+    border: none;
     border-right: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-soft);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
-    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
 }
 
 aside#sidebar.collapsed {
@@ -94,11 +64,9 @@ body.dark aside#sidebar {
 }
 
 .sidebar-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--grey);
+    @include mixins.flex-stack(row, space-between, center);
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-muted);
 }
 
 aside#sidebar.collapsed .sidebar-top {
@@ -113,14 +81,14 @@ aside#sidebar.collapsed .sidebar-top {
 
 .sidebar-brand i {
     font-size: 1.8rem;
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .brand-name {
     font-size: 1.2rem;
     font-weight: 600;
-    color: var(--dark);
-    transition: opacity 0.3s ease;
+    @include mixins.text-gradient();
+    transition: opacity var(--transition-fast);
 }
 
 aside#sidebar.collapsed .brand-name {
@@ -132,7 +100,7 @@ aside#sidebar.collapsed .sidebar-brand {
 }
 
 body.dark .brand-name {
-    color: var(--light);
+    @include mixins.text-gradient(var(--color-warning), var(--color-primary));
 }
 
 .close-btn {
@@ -141,11 +109,11 @@ body.dark .brand-name {
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .close-btn {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .sidebar-menu {
@@ -163,7 +131,7 @@ body.dark .close-btn {
     align-items: center;
     gap: 1rem;
     padding: 0.8rem 1.5rem;
-    color: var(--dark);
+    color: var(--color-dark);
     text-decoration: none;
     transition: all 0.3s ease;
     position: relative;
@@ -255,11 +223,11 @@ body.dark header#navbar {
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .menu-btn {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 /* 사이드바 토글 버튼 */
@@ -268,14 +236,14 @@ body.dark .menu-btn {
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: var(--dark);
+    color: var(--color-dark);
     padding: 0.5rem;
     border-radius: 8px;
     transition: all 0.3s ease;
 }
 
 body.dark .navbar-sidebar-toggle-btn {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .navbar-sidebar-toggle-btn:hover {
@@ -321,12 +289,12 @@ aside#sidebar.collapsed .navbar-sidebar-toggle-btn {
 body.dark .search-box input {
     background: #342E37;
     border-color: #444;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .search-box input:focus {
     outline: none;
-    border-color: var(--blue);
+    border-color: var(--color-primary);
 }
 
 .navbar-center {
@@ -361,7 +329,7 @@ body.dark .search-box input {
 body.dark .categories-btn,
 body.dark .notification-btn {
     background: #342E37;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .categories-btn:hover,
@@ -382,13 +350,13 @@ body.dark .notification-btn {
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
-    color: var(--dark);
+    color: var(--color-dark);
     font-size: 1.3rem;
 }
 
 body.dark .nav-switch-btn {
     background: #342E37;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .nav-switch-btn:hover:not(:disabled) {
@@ -438,13 +406,13 @@ body.dark .categories-dropdown {
     align-items: center;
     gap: 0.8rem;
     padding: 0.8rem 1rem;
-    color: var(--dark);
+    color: var(--color-dark);
     text-decoration: none;
     transition: all 0.3s ease;
 }
 
 body.dark .category-item {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .category-item i {
@@ -453,12 +421,12 @@ body.dark .category-item {
 
 .category-item:hover {
     background: var(--grey);
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 body.dark .category-item:hover {
     background: #342E37;
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .notifications {
@@ -518,7 +486,7 @@ body.dark .notification-header {
 
 .mark-all-read {
     font-size: 0.9rem;
-    color: var(--blue);
+    color: var(--color-primary);
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -625,7 +593,7 @@ body.dark .notification-footer {
 }
 
 .view-all {
-    color: var(--blue);
+    color: var(--color-primary);
     text-decoration: none;
     font-weight: 500;
     transition: all 0.3s ease;
@@ -651,7 +619,7 @@ body.dark .notification-footer {
 
 .profile-btn i {
     font-size: 2.5rem;
-    color: var(--blue);
+    color: var(--color-primary);
     transition: all 0.3s ease;
 }
 
@@ -746,18 +714,18 @@ body.dark .profile-info {
 
 .profile-info-header i {
     font-size: 2.5rem;
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .profile-name {
     font-weight: 600;
     font-size: 1.1rem;
     margin: 0;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .profile-name {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .profile-role {
@@ -786,18 +754,18 @@ body.dark .profile-class {
 }
 
 .profile-class i {
-    color: var(--blue);
+    color: var(--color-primary);
     font-size: 1.1rem;
 }
 
 .profile-class span {
     font-size: 0.9rem;
     font-weight: 500;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .profile-class span {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .profile-divider {
@@ -815,7 +783,7 @@ body.dark .profile-divider {
     align-items: center;
     gap: 0.8rem;
     padding: 1rem 1.5rem;
-    color: var(--dark);
+    color: var(--color-dark);
     text-decoration: none;
     transition: all 0.3s ease;
 }
@@ -825,7 +793,7 @@ body.dark .profile-divider {
 }
 
 body.dark .profile-menu-item {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .profile-menu-item:hover {
@@ -998,7 +966,7 @@ body.dark .dashboard-card {
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid var(--grey);
-    color: var(--blue);
+    color: var(--color-primary);
     text-decoration: none;
     font-weight: 500;
     transition: all 0.3s ease;
@@ -1024,7 +992,7 @@ body.dark .card-link {
 
 .announcement-card .card-badge {
     background: rgba(60, 145, 230, 0.15);
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .card-action.ghost {
@@ -1036,7 +1004,7 @@ body.dark .card-link {
     border-radius: var(--radius-sm);
     border: 1px solid rgba(60, 145, 230, 0.25);
     background: transparent;
-    color: var(--blue);
+    color: var(--color-primary);
     cursor: pointer;
     transition: background var(--transition-base), color var(--transition-base);
 }
@@ -1240,7 +1208,7 @@ body.dark .announcement-meta {
 }
 
 .modal-content.announcement .modal-header i {
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .modal-content.announcement .form-group {
@@ -1262,7 +1230,7 @@ body.dark .modal-content.announcement .form-group input,
 body.dark .modal-content.announcement .form-group textarea {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.12);
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .announcement-detail-body {
@@ -1276,11 +1244,11 @@ body.dark .modal-content.announcement .form-group textarea {
 .announcement-detail-title {
     font-size: 1.2rem;
     font-weight: 700;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .announcement-detail-title {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .announcement-detail-meta {
@@ -1388,11 +1356,11 @@ body.dark .announcement-all-item.announcement-unread {
 .announcement-all-item-title {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .announcement-all-item-title {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .announcement-all-item-date {
@@ -1453,13 +1421,13 @@ body.dark .announcement-all-item-body {
     background: var(--grey);
     border-radius: 10px;
     text-decoration: none;
-    color: var(--dark);
+    color: var(--color-dark);
     transition: all 0.3s ease;
 }
 
 body.dark .quicklink-item {
     background: #342E37;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .quicklink-item:hover {
@@ -1528,7 +1496,7 @@ body.dark .progress-bar {
 .progress-value {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .assignment-list {
@@ -1642,12 +1610,12 @@ body.dark .today-class-item {
 
 .class-status-badge.upcoming {
     background: var(--grey);
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .class-status-badge.upcoming {
     background: #342E37;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 /* Responsive Grid */
@@ -1741,12 +1709,12 @@ body.dark .class-description {
 
 .class-status.upcoming {
     background: var(--grey);
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .class-status.upcoming {
     background: #342E37;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .btn-primary {
@@ -2018,7 +1986,7 @@ body.dark .modal-header {
 .modal-header h3 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--blue);
+    color: var(--color-primary);
     margin: 0;
 }
 
@@ -2034,7 +2002,7 @@ body.dark .modal-header h3 {
     border-radius: 50%;
     font-size: 1.3rem;
     cursor: pointer;
-    color: var(--dark);
+    color: var(--color-dark);
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
@@ -2043,7 +2011,7 @@ body.dark .modal-header h3 {
 
 body.dark .modal-close {
     background: rgba(255, 255, 255, 0.1);
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .modal-close:hover {
@@ -2075,12 +2043,12 @@ body.dark .modal-close {
 body.dark .post-title-input {
     background: rgba(52, 46, 55, 0.8);
     border-color: rgba(60, 145, 230, 0.3);
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .post-title-input:focus {
     outline: none;
-    border-color: var(--blue);
+    border-color: var(--color-primary);
     background: white;
     box-shadow: 0 0 0 3px rgba(60, 145, 230, 0.1);
 }
@@ -2105,7 +2073,7 @@ body.dark .post-title-input::placeholder {
     padding: 1rem;
     border: 2px solid rgba(60, 145, 230, 0.2);
     border-radius: var(--radius-md);
-    font-family: var(--poppins);
+    font-family: var(--font-poppins);
     font-size: 1rem;
     resize: vertical;
     transition: all var(--transition-fast);
@@ -2116,12 +2084,12 @@ body.dark .post-title-input::placeholder {
 body.dark .modal-body textarea {
     background: rgba(52, 46, 55, 0.8);
     border-color: rgba(60, 145, 230, 0.3);
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .modal-body textarea:focus {
     outline: none;
-    border-color: var(--blue);
+    border-color: var(--color-primary);
     background: white;
     box-shadow: 0 0 0 3px rgba(60, 145, 230, 0.1);
 }
@@ -2150,7 +2118,7 @@ body.dark .modal-body textarea:focus {
 
 body.dark .upload-label {
     background: #342E37;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .upload-label:hover {
@@ -2241,12 +2209,12 @@ body.dark .upload-label {
 
 .btn-cancel {
     background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .btn-cancel {
     background: linear-gradient(135deg, #342E37, #2a2528);
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .btn-cancel:hover {
@@ -2340,13 +2308,13 @@ body.dark .post-header {
 .post-title {
     font-size: 1.15rem;
     font-weight: 600;
-    color: var(--dark);
+    color: var(--color-dark);
     margin-bottom: 0.5rem;
     line-height: 1.4;
 }
 
 body.dark .post-title {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .post-description {
@@ -2366,12 +2334,12 @@ body.dark .post-description {
 .post-content {
     margin-bottom: 1rem;
     line-height: 1.7;
-    color: var(--dark);
+    color: var(--color-dark);
     font-size: 0.95rem;
 }
 
 body.dark .post-content {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .post-images {
@@ -2427,7 +2395,7 @@ body.dark .action-btn {
 
 .action-btn:hover {
     background: rgba(60, 145, 230, 0.1);
-    color: var(--blue);
+    color: var(--color-primary);
     transform: translateY(-2px);
 }
 
@@ -2437,7 +2405,7 @@ body.dark .action-btn:hover {
 }
 
 .action-btn.active {
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .action-btn.active i {
@@ -2506,7 +2474,7 @@ body.dark .ai-feedback-label {
 }
 
 .ai-feedback-content {
-    color: var(--dark);
+    color: var(--color-dark);
     line-height: 1.6;
     font-size: 0.95rem;
 }
@@ -2574,12 +2542,12 @@ body.dark .comments-section {
 body.dark .comment-input {
     background: #342E37;
     border-color: #444;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .comment-input:focus {
     outline: none;
-    border-color: var(--blue);
+    border-color: var(--color-primary);
 }
 
 .comment-submit {
@@ -2944,12 +2912,12 @@ body.dark .chat-message.other .message-bubble {
 .message-sender-name {
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--dark);
+    color: var(--color-dark);
     margin-bottom: 0.3rem;
 }
 
 body.dark .message-sender-name {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .message-time {
@@ -2984,12 +2952,12 @@ body.dark .chat-input-container {
     justify-content: center;
     transition: all 0.3s ease;
     font-size: 1.2rem;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .chat-input-btn {
     background: #342E37;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .chat-input-btn:hover {
@@ -3003,7 +2971,7 @@ body.dark .chat-input-btn {
     border-radius: 24px;
     padding: 0.8rem 1.2rem;
     font-size: 0.95rem;
-    font-family: var(--poppins);
+    font-family: var(--font-poppins);
     transition: all 0.3s ease;
     background: transparent;
 }
@@ -3011,12 +2979,12 @@ body.dark .chat-input-btn {
 body.dark .chat-message-input {
     border-color: #444;
     background: #342E37;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .chat-message-input:focus {
     outline: none;
-    border-color: var(--blue);
+    border-color: var(--color-primary);
 }
 
 .chat-send-btn {
@@ -3084,7 +3052,7 @@ body.dark .chat-messages .empty-state {
 }
 
 .summary-content {
-    color: var(--dark);
+    color: var(--color-dark);
     line-height: 1.8;
 }
 
@@ -3102,18 +3070,18 @@ body.dark .summary-content {
     font-size: 1.2rem;
     margin-top: 1.5rem;
     margin-bottom: 0.8rem;
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .summary-content h4 {
     font-size: 1rem;
     margin-top: 1rem;
     margin-bottom: 0.5rem;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .summary-content h4 {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .summary-content ul,
@@ -3147,12 +3115,12 @@ body.dark .summary-content h4 {
 }
 
 .summary-error p {
-    color: var(--dark);
+    color: var(--color-dark);
     margin: 0.5rem 0;
 }
 
 body.dark .summary-error p {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 /* Responsive */
@@ -3259,11 +3227,11 @@ body.dark .stat-card {
 .stat-value {
     font-size: 1.8rem;
     font-weight: 700;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .stat-value {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .stat-label {
@@ -3296,11 +3264,11 @@ body.dark .cloud-filters {
 
 .filter-group label {
     font-weight: 600;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .filter-group label {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .filter-btn-cloud {
@@ -3314,12 +3282,12 @@ body.dark .filter-group label {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .filter-btn-cloud {
     background: #342E37;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .filter-btn-cloud:hover {
@@ -3395,11 +3363,11 @@ body.dark .cloud-legend {
 .cloud-legend h3 {
     font-size: 1.2rem;
     margin-bottom: 1rem;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .cloud-legend h3 {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 #keyword-list {
@@ -3465,7 +3433,7 @@ body.dark .cloud-loading {
 
 .loading-spinner {
     font-size: 3rem;
-    color: var(--blue);
+    color: var(--color-primary);
     margin-bottom: 1rem;
 }
 
@@ -3628,7 +3596,7 @@ body.dark .quiz-header {
 .quiz-progress {
     font-size: 1.2rem;
     font-weight: 600;
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 /* 문제 영역 */
@@ -3658,7 +3626,7 @@ body.dark .question-card-quiz {
 }
 
 .question-number {
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .question-type {
@@ -3709,12 +3677,12 @@ body.dark .option-item {
 }
 
 .option-item:hover {
-    border-color: var(--blue);
+    border-color: var(--color-primary);
     background: rgba(60, 145, 230, 0.05);
 }
 
 .option-item.selected {
-    border-color: var(--blue);
+    border-color: var(--color-primary);
     background: rgba(60, 145, 230, 0.1);
 }
 
@@ -3769,18 +3737,18 @@ body.dark .ox-option {
     border: 2px solid var(--grey);
     border-radius: 8px;
     font-size: 1rem;
-    font-family: var(--poppins);
+    font-family: var(--font-poppins);
 }
 
 body.dark .short-answer-input {
     background: #342E37;
     border-color: #444;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .short-answer-input:focus {
     outline: none;
-    border-color: var(--blue);
+    border-color: var(--color-primary);
 }
 
 /* 퀴즈 푸터 */
@@ -3802,7 +3770,7 @@ body.dark .short-answer-input {
 
 body.dark .btn-prev {
     background: #342E37;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .btn-prev:hover:not(:disabled) {
@@ -3893,7 +3861,7 @@ body.dark .summary-card {
 }
 
 .summary-card.total i {
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .summary-value {
@@ -3926,7 +3894,7 @@ body.dark .ai-feedback {
     gap: 0.5rem;
     font-size: 1.5rem;
     margin-bottom: 1rem;
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .feedback-content {
@@ -4035,12 +4003,12 @@ body.dark .result-question-item {
 
 .btn-home {
     background: var(--grey);
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .btn-home {
     background: #342E37;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .btn-home:hover {
@@ -4135,7 +4103,7 @@ body.dark .profile-avatar-large {
 
 .profile-avatar-large i {
     font-size: 120px;
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .profile-avatar-actions {
@@ -4177,15 +4145,15 @@ body.dark .profile-avatar-large {
     gap: 0.5rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .form-group label {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .form-group label i {
-    color: var(--blue);
+    color: var(--color-primary);
     font-size: 1.1rem;
 }
 
@@ -4196,7 +4164,7 @@ body.dark .form-group label {
     border: 2px solid var(--grey);
     border-radius: 12px;
     font-size: 1rem;
-    font-family: var(--poppins);
+    font-family: var(--font-poppins);
     transition: all 0.3s ease;
 }
 
@@ -4204,13 +4172,13 @@ body.dark .form-input,
 body.dark .form-textarea {
     background: #342E37;
     border-color: #444;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .form-input:focus,
 .form-textarea:focus {
     outline: none;
-    border-color: var(--blue);
+    border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(60, 145, 230, 0.1);
 }
 
@@ -4245,12 +4213,12 @@ body.dark .form-actions {
 
 .btn-cancel-profile {
     background: var(--grey);
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .btn-cancel-profile {
     background: #342E37;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .btn-cancel-profile:hover {
@@ -4331,17 +4299,17 @@ body.dark footer#footer {
 
 .footer-brand i {
     font-size: 1.5rem;
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .footer-brand-name {
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .footer-brand-name {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .footer-info p {
@@ -4371,7 +4339,7 @@ body.dark .footer-links a {
 }
 
 .footer-links a:hover {
-    color: var(--blue);
+    color: var(--color-primary);
     text-decoration: underline;
 }
 
@@ -4495,7 +4463,7 @@ body.dark .login-card {
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .login-header p {
@@ -4542,21 +4510,21 @@ body.dark .login-header p {
 
 .btn-google-login {
     background: white;
-    color: var(--dark);
+    color: var(--color-dark);
     border: 2px solid var(--grey);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 body.dark .btn-google-login {
     background: #2D2628;
-    color: var(--light);
+    color: var(--color-surface);
     border-color: #444;
 }
 
 .btn-google-login:hover {
     transform: translateY(-3px) scale(1.02);
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-    border-color: var(--blue);
+    border-color: var(--color-primary);
 }
 
 .login-footer {
@@ -4645,7 +4613,7 @@ body.dark .login-footer {
 
 body.dark .login-message {
     background: #2D2628;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .login-message-success {
@@ -4684,17 +4652,17 @@ header#navbar.class-select-navbar {
 
 .navbar-brand i {
     font-size: 1.8rem;
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .navbar-brand .brand-name {
     font-size: 1.2rem;
     font-weight: 600;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .navbar-brand .brand-name {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .class-select-main {
@@ -4739,7 +4707,7 @@ body.dark .navbar-brand .brand-name {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .class-select-header p {
@@ -4796,7 +4764,7 @@ body.dark .class-card {
 .class-card:hover {
     transform: translateY(-10px) scale(1.03);
     box-shadow: 0 15px 40px rgba(60, 145, 230, 0.2);
-    border-color: var(--blue);
+    border-color: var(--color-primary);
 }
 
 .class-card-icon {
@@ -4817,11 +4785,11 @@ body.dark .class-card {
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 1rem;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .class-card h3 {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .class-card-info {
@@ -4848,7 +4816,7 @@ body.dark .info-item {
 }
 
 .info-item i {
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .add-class-card {
@@ -4915,18 +4883,18 @@ body.dark .add-class-card p {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .btn-back {
     background: #2D2628;
     border-color: #444;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .btn-back:hover {
     transform: translateX(-5px);
-    border-color: var(--blue);
+    border-color: var(--color-primary);
     box-shadow: 0 5px 20px rgba(60, 145, 230, 0.2);
 }
 
@@ -4949,7 +4917,7 @@ body.dark .btn-back {
 
 body.dark .class-select-message {
     background: #2D2628;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .class-select-message-success {
@@ -5058,13 +5026,13 @@ body.dark .custom-dialog {
 .custom-dialog-message {
     font-size: 1.1rem;
     line-height: 1.6;
-    color: var(--dark);
+    color: var(--color-dark);
     margin: 0;
     font-weight: 500;
 }
 
 body.dark .custom-dialog-message {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .custom-dialog-footer {
@@ -5107,12 +5075,12 @@ body.dark .custom-dialog-message {
 
 .custom-dialog-btn-cancel {
     background: #f5f5f5;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .custom-dialog-btn-cancel {
     background: #342E37;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .custom-dialog-btn-cancel:hover {
@@ -5157,7 +5125,7 @@ body.dark .custom-dialog-btn-cancel:hover {
     border-radius: 50%;
     border: none;
     background: rgba(255, 255, 255, 0.9);
-    color: var(--dark);
+    color: var(--color-dark);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -5169,7 +5137,7 @@ body.dark .custom-dialog-btn-cancel:hover {
 body.dark .class-edit-btn,
 body.dark .class-delete-btn {
     background: rgba(45, 38, 40, 0.9);
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .class-edit-btn:hover {
@@ -5207,13 +5175,13 @@ body.dark .class-info-display {
 
 .class-info-display i {
     font-size: 1.5rem;
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .class-info-display .current-class-name {
     font-weight: 600;
     font-size: 1.1rem;
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 body.dark .class-info-display .current-class-name {
@@ -5293,20 +5261,20 @@ body.dark .class-info-display .current-class-name {
 
 .message-bubble-other {
     background: #EEE;
-    color: var(--dark);
+    color: var(--color-dark);
     border-radius: 18px 18px 18px 4px;
 }
 
 body.dark .message-bubble-other {
     background: #342E37;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .message-sender-name {
     font-size: 0.85rem;
     font-weight: 600;
     margin-bottom: 0.25rem;
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 body.dark .message-sender-name {
@@ -5351,7 +5319,7 @@ body.dark .chat-input-container {
     border-radius: 50%;
     border: none;
     background: var(--grey);
-    color: var(--dark);
+    color: var(--color-dark);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -5362,7 +5330,7 @@ body.dark .chat-input-container {
 
 body.dark .chat-input-btn {
     background: #342E37;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .chat-input-btn:hover {
@@ -5388,11 +5356,11 @@ body.dark .chat-input-btn {
 body.dark .chat-message-input {
     background: #342E37;
     border-color: #444;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .chat-message-input:focus {
-    border-color: var(--blue);
+    border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(60, 145, 230, 0.1);
 }
 
@@ -5521,7 +5489,7 @@ body.dark .ai-feedback-panel {
 .ai-feedback-panel h3 {
     font-size: 1.2rem;
     margin-bottom: 1rem;
-    color: var(--blue);
+    color: var(--color-primary);
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -5546,11 +5514,11 @@ body.dark .ai-feedback-item {
 .ai-feedback-item-title {
     font-weight: 600;
     margin-bottom: 0.5rem;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .ai-feedback-item-title {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .ai-feedback-item-content {
@@ -5675,7 +5643,7 @@ body.dark .sessions-grid .session-card {
 }
 
 body.dark .sessions-grid .session-card h3 {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 body.dark .sessions-grid .session-card p {
@@ -5729,7 +5697,7 @@ body.dark .session-create-header {
 
 .session-create-header h1 {
     font-size: 1.8rem;
-    color: var(--blue);
+    color: var(--color-primary);
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -5753,18 +5721,18 @@ body.dark .session-create-header h1 {
 
 .form-group label {
     font-weight: 600;
-    color: var(--dark);
+    color: var(--color-dark);
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
 body.dark .form-group label {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .form-group label i {
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .form-group input {
@@ -5779,11 +5747,11 @@ body.dark .form-group label {
 body.dark .form-group input {
     background: #342E37;
     border-color: #444;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .form-group input:focus {
-    border-color: var(--blue);
+    border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(60, 145, 230, 0.1);
 }
 
@@ -5807,12 +5775,12 @@ body.dark .form-group input {
 
 .form-actions .btn-cancel {
     background: var(--grey);
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .form-actions .btn-cancel {
     background: #342E37;
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .form-actions .btn-submit {
@@ -5851,12 +5819,12 @@ body.dark .session-detail-container {
 
 .session-detail-header h1 {
     font-size: 2rem;
-    color: var(--dark);
+    color: var(--color-dark);
     flex: 1;
 }
 
 body.dark .session-detail-header h1 {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .session-detail-card {
@@ -5886,7 +5854,7 @@ body.dark .session-detail-card {
     padding: 0.5rem 1rem;
     background: rgba(60, 145, 230, 0.1);
     border-radius: var(--radius-md);
-    color: var(--blue);
+    color: var(--color-primary);
     font-weight: 600;
 }
 
@@ -5966,7 +5934,7 @@ body.dark .session-tab {
 
 .session-tab:hover {
     background: rgba(60, 145, 230, 0.05);
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 body.dark .session-tab:hover {
@@ -6016,7 +5984,7 @@ body.dark .session-tab:hover {
     padding: 0.5rem 1rem;
     background: rgba(60, 145, 230, 0.1);
     border-radius: var(--radius-md);
-    color: var(--blue);
+    color: var(--color-primary);
     font-weight: 600;
     font-size: 0.9rem;
 }
@@ -6096,16 +6064,16 @@ body.dark .toast {
 }
 
 .toast-info .toast-content i {
-    color: var(--blue);
+    color: var(--color-primary);
 }
 
 .toast-content span {
     font-weight: 500;
-    color: var(--dark);
+    color: var(--color-dark);
 }
 
 body.dark .toast-content span {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 /* 반응형 */
@@ -6206,12 +6174,12 @@ button:disabled {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 2rem;
-    color: var(--dark);
+    color: var(--color-dark);
     font-family: 'Poppins', 'Noto Sans KR', sans-serif;
 }
 
 body.dark .board-header h1 {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 /* 탭 메뉴 */
@@ -6246,12 +6214,12 @@ body.dark .board-tab {
 }
 
 .board-tab:hover {
-    color: var(--dark);
+    color: var(--color-dark);
     background: #f9f9f9;
 }
 
 body.dark .board-tab:hover {
-    color: var(--light);
+    color: var(--color-surface);
     background: rgba(255, 255, 255, 0.05);
 }
 
@@ -6261,8 +6229,8 @@ body.dark .board-tab:hover {
 }
 
 body.dark .board-tab.active {
-    color: var(--light);
-    border-bottom-color: var(--light);
+    color: var(--color-surface);
+    border-bottom-color: var(--color-surface);
 }
 
 /* 게시판 컨테이너 */
@@ -6310,14 +6278,14 @@ body.dark .board-header {
 
 .board-header-cell {
     font-weight: 600;
-    color: var(--dark);
+    color: var(--color-dark);
     font-size: 0.95rem;
     letter-spacing: 0.3px;
     padding: 0 1rem;
 }
 
 body.dark .board-header-cell {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .board-header-cell:first-child {
@@ -6398,7 +6366,7 @@ body.dark .board-row:hover {
 
 .board-cell {
     padding: 0 1rem;
-    color: var(--dark);
+    color: var(--color-dark);
     font-size: 0.95rem;
     transition: color var(--transition-fast);
     text-align: left;
@@ -6410,7 +6378,7 @@ body.dark .board-row:hover {
 .board-cell:first-child {
     padding-left: 1.5rem;
     font-weight: 600;
-    color: var(--blue);
+    color: var(--color-primary);
     width: 80px;
     text-align: center;
     white-space: nowrap;
@@ -6437,7 +6405,7 @@ body.dark .board-row:hover {
 }
 
 body.dark .board-cell {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 body.dark .board-cell:first-child {
@@ -6446,12 +6414,12 @@ body.dark .board-cell:first-child {
 
 .board-title-cell {
     font-weight: 500;
-    color: var(--dark);
+    color: var(--color-dark);
     transition: color var(--transition-fast);
 }
 
 .board-row:hover .board-title-cell {
-    color: var(--blue);
+    color: var(--color-primary);
     font-weight: 600;
 }
 
@@ -6491,7 +6459,7 @@ body.dark .board-row:hover .board-title-cell {
 body.dark .board-search-input {
     background: rgba(52, 46, 55, 0.8);
     border-color: rgba(60, 145, 230, 0.3);
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 body.dark .board-search-input::placeholder {
@@ -6500,7 +6468,7 @@ body.dark .board-search-input::placeholder {
 
 .board-search-input:focus {
     outline: none;
-    border-color: var(--blue);
+    border-color: var(--color-primary);
     background: white;
     box-shadow: 0 0 0 4px rgba(60, 145, 230, 0.1);
     transform: translateY(-1px);
@@ -6645,17 +6613,17 @@ body.dark .row-pinned:hover {
 
 /* 게시글 테이블 링크 */
 .board-title-cell a {
-    color: var(--dark);
+    color: var(--color-dark);
     text-decoration: none;
     transition: color var(--transition-fast);
 }
 
 body.dark .board-title-cell a {
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .board-title-cell a:hover {
-    color: var(--blue);
+    color: var(--color-primary);
     text-decoration: underline;
 }
 
@@ -6672,7 +6640,7 @@ body.dark .board-title-cell a:hover {
     background: white;
     border: 2px solid rgba(60, 145, 230, 0.2);
     border-radius: var(--radius-md);
-    color: var(--dark);
+    color: var(--color-dark);
     font-weight: 600;
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -6682,11 +6650,11 @@ body.dark .board-title-cell a:hover {
 body.dark .btn-back-list {
     background: rgba(52, 46, 55, 0.8);
     border-color: rgba(60, 145, 230, 0.3);
-    color: var(--light);
+    color: var(--color-surface);
 }
 
 .btn-back-list:hover {
-    border-color: var(--blue);
+    border-color: var(--color-primary);
     background: rgba(60, 145, 230, 0.05);
     transform: translateX(-4px);
 }
