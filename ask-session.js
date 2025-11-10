@@ -5,13 +5,59 @@
  * TODO: Firebase 연결 시
  */
 
+const AppUtilsRef = window.AppUtils || {};
+const {
+    escapeHtml: escapeHtmlUtil = (text) => String(text ?? ''),
+    formatDate: formatDateUtil = (date, options) => new Date(date).toLocaleDateString('ko-KR', options),
+    getTimeAgo: getTimeAgoUtil = () => '',
+    generateId: generateIdUtil = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+    getStoredArray: getStoredArrayUtil = (key, fallback = []) => {
+        try {
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        } catch {
+            return fallback;
+        }
+    },
+    setStoredArray: setStoredArrayUtil = (key, value) => {
+        try {
+            localStorage.setItem(key, JSON.stringify(value || []));
+        } catch (err) {
+            console.warn('[AppUtils] Failed to persist ask-session data', err);
+        }
+    },
+    getStoredData: getStoredDataUtil = (key, fallback) => {
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : fallback;
+        } catch {
+            return fallback;
+        }
+    },
+    setStoredData: setStoredDataUtil = (key, value) => {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch (err) {
+            console.warn('[AppUtils] Failed to store ask-session data', err);
+        }
+    }
+} = AppUtilsRef;
+
+const escapeHtml = (text) => escapeHtmlUtil(text);
+const formatDate = (date, options) => formatDateUtil(date, options);
+const getTimeAgo = (date) => getTimeAgoUtil(date);
+const generateId = (prefix) => generateIdUtil(prefix);
+const getStoredArray = (key, fallback = []) => getStoredArrayUtil(key, fallback);
+const setStoredArray = (key, value) => setStoredArrayUtil(key, value);
+const getStoredData = (key, fallback) => getStoredDataUtil(key, fallback);
+const setStoredData = (key, value) => setStoredDataUtil(key, value);
+
 // 전역 변수
 let messages = [];
 let askPosts = []; // Ask 게시글
 let imagesToUpload = []; // Ask 게시글 이미지
 // 현재 사용자 정보 (localStorage에서 불러오기)
 let currentUser = {
-    id: localStorage.getItem('userName') ? `user_${localStorage.getItem('userName')}` : 'user_' + Date.now(),
+    id: localStorage.getItem('userName') ? `user_${localStorage.getItem('userName')}` : generateId('user'),
     name: localStorage.getItem('userName') || '익명',
     isAnonymous: false
 };
@@ -216,7 +262,7 @@ async function handleSendMessage() {
     messages.push(messageData);
     
     // localStorage에 저장 (sessionId 기반)
-    localStorage.setItem(`session_messages_${sessionId}`, JSON.stringify(messages));
+    setStoredData(`session_messages_${sessionId}`, messages);
     
     // UI 업데이트
     renderMessages();
@@ -295,7 +341,7 @@ function applyReadOnlyModeToAsk() {
  */
 function loadMessagesForSession(sessionId) {
     // localStorage에서 해당 sessionId의 메시지 불러오기
-    const sessionMessages = JSON.parse(localStorage.getItem(`session_messages_${sessionId}`) || '[]');
+    const sessionMessages = getStoredData(`session_messages_${sessionId}`, []);
     
     if (sessionMessages.length === 0) {
         // 기본 환영 메시지
@@ -488,15 +534,6 @@ function formatTime(timestamp) {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${hours}:${minutes}`;
-}
-
-/**
- * HTML 이스케이프
- */
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
 }
 
 /**
@@ -832,7 +869,7 @@ async function handleAskSubmitPost() {
         const askPostContent = askPostText.value.trim();
         
         const postData = {
-            id: 'ask_post_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+            id: generateId('ask_post'),
             title: askPostTitle,
             text: askPostContent,
             images: imageUrls,
@@ -844,15 +881,15 @@ async function handleAskSubmitPost() {
         };
 
         // localStorage에 저장
-        const storedPosts = JSON.parse(localStorage.getItem('ask_posts') || '[]');
+        const storedPosts = getStoredArray('ask_posts');
         storedPosts.unshift(postData);
-        localStorage.setItem('ask_posts', JSON.stringify(storedPosts));
+        setStoredArray('ask_posts', storedPosts);
         
         // posts 배열에 추가
         askPosts.unshift(postData);
         
         // sessions 테이블에도 추가 (게시판 목록에 표시하기 위해)
-        const sessionId = `ask_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const sessionId = generateId('ask_session');
         const sessionData = {
             id: sessionId,
             title: askPostTitle || '제목 없음',
@@ -864,9 +901,9 @@ async function handleAskSubmitPost() {
             author: currentUser.name // 작성자
         };
         
-        const sessions = JSON.parse(localStorage.getItem('sessions') || '[]');
+        const sessions = getStoredArray('sessions');
         sessions.unshift(sessionData);
-        localStorage.setItem('sessions', JSON.stringify(sessions));
+        setStoredArray('sessions', sessions);
         
         // UI 업데이트
         renderAskPosts();
@@ -921,7 +958,7 @@ function loadAskPosts() {
     if (!askBoard) return;
 
     // localStorage에서 게시글 불러오기
-    const storedPosts = JSON.parse(localStorage.getItem('ask_posts') || '[]');
+    const storedPosts = getStoredArray('ask_posts');
     askPosts = storedPosts;
     
     // UI에 렌더링
@@ -1044,15 +1081,6 @@ function formatAskRelativeTime(timestamp) {
     if (days < 7) return `${days}일 전`;
     
     return date.toLocaleDateString('ko-KR');
-}
-
-/**
- * Ask HTML 이스케이프
- */
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
 }
 
 // 전역 함수로 등록

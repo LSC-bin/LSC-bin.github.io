@@ -4,6 +4,34 @@
  * Activity + Ask 통합 UI 리디자인
  */
 
+const AppUtilsRef = window.AppUtils || {};
+const {
+    escapeHtml: escapeHtmlUtil = (text) => String(text ?? ''),
+    getTimeAgo: getTimeAgoUtil = () => '',
+    generateId: generateIdUtil = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+    getStoredData: getStoredDataUtil = (key, fallback) => {
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : fallback;
+        } catch {
+            return fallback;
+        }
+    },
+    setStoredData: setStoredDataUtil = (key, value) => {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch (err) {
+            console.warn('[AppUtils] Failed to save session data', err);
+        }
+    }
+} = AppUtilsRef;
+
+const escapeHtml = (text) => escapeHtmlUtil(text);
+const getTimeAgo = (date) => getTimeAgoUtil(date);
+const generateId = (prefix) => generateIdUtil(prefix);
+const getStoredData = (key, fallback) => getStoredDataUtil(key, fallback);
+const setStoredData = (key, value) => setStoredDataUtil(key, value);
+
 // 전역 변수
 let questions = [];
 let chatMessages = [];
@@ -11,7 +39,7 @@ let materials = [];
 
 // 현재 사용자 정보
 const currentUser = {
-    id: 'user_' + Math.random().toString(36).substr(2, 9),
+    id: generateId('user'),
     name: localStorage.getItem('userName') || '학생' + Math.floor(Math.random() * 100)
 };
 
@@ -135,7 +163,7 @@ function handleQuestionSubmit(sessionId) {
     if (!questionText) return;
 
     const question = {
-        id: 'q_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        id: generateId('q'),
         text: questionText,
         author: currentUser.name,
         authorId: currentUser.id,
@@ -244,7 +272,7 @@ function handleChatSend(sessionId) {
     if (!messageText) return;
 
     const message = {
-        id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        id: generateId('msg'),
         text: messageText,
         author: currentUser.name,
         authorId: currentUser.id,
@@ -328,7 +356,7 @@ function handleMaterialUpload(sessionId) {
     // 파일 정보 저장 (실제 업로드는 Firebase 연동 시)
     Array.from(files).forEach(file => {
         const material = {
-            id: 'mat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+            id: generateId('mat'),
             title: title || file.name,
             fileName: file.name,
             fileSize: file.size,
@@ -457,65 +485,35 @@ function closeMaterialModalFunc() {
  */
 function loadQuestionsForSession(sessionId) {
     if (!sessionId) return;
-    const stored = localStorage.getItem(`session_questions_${sessionId}`);
-    if (stored) {
-        questions = JSON.parse(stored);
-        renderQuestions();
-    }
+    questions = getStoredData(`session_questions_${sessionId}`, []);
+    renderQuestions();
 }
 
 function saveQuestionsForSession(sessionId) {
     if (!sessionId) return;
-    localStorage.setItem(`session_questions_${sessionId}`, JSON.stringify(questions));
+    setStoredData(`session_questions_${sessionId}`, questions);
 }
 
 function loadChatMessagesForSession(sessionId) {
     if (!sessionId) return;
-    const stored = localStorage.getItem(`session_chat_${sessionId}`);
-    if (stored) {
-        chatMessages = JSON.parse(stored);
-        renderChatMessages();
-    }
+    chatMessages = getStoredData(`session_chat_${sessionId}`, []);
+    renderChatMessages();
 }
 
 function saveChatMessagesForSession(sessionId) {
     if (!sessionId) return;
-    localStorage.setItem(`session_chat_${sessionId}`, JSON.stringify(chatMessages));
+    setStoredData(`session_chat_${sessionId}`, chatMessages);
 }
 
 function loadMaterialsForSession(sessionId) {
     if (!sessionId) return;
-    const stored = localStorage.getItem(`session_materials_${sessionId}`);
-    if (stored) {
-        materials = JSON.parse(stored);
-        renderMaterials();
-    }
+    materials = getStoredData(`session_materials_${sessionId}`, []);
+    renderMaterials();
 }
 
 function saveMaterialsForSession(sessionId) {
     if (!sessionId) return;
-    localStorage.setItem(`session_materials_${sessionId}`, JSON.stringify(materials));
-}
-
-/**
- * 유틸리티 함수들
- */
-function getTimeAgo(dateString) {
-    const now = new Date();
-    const date = new Date(dateString);
-    const diff = now - date;
-    
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-    
-    if (seconds < 60) return '방금 전';
-    if (minutes < 60) return `${minutes}분 전`;
-    if (hours < 24) return `${hours}시간 전`;
-    if (days < 7) return `${days}일 전`;
-    
-    return date.toLocaleDateString('ko-KR');
+    setStoredData(`session_materials_${sessionId}`, materials);
 }
 
 function getFileIcon(fileType) {
@@ -534,12 +532,6 @@ function getFileColor(fileType) {
     if (fileType.includes('word') || fileType.includes('doc')) return '#2196F3';
     if (fileType.includes('excel') || fileType.includes('xls')) return '#4CAF50';
     return '#3C91E6';
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
 }
 
 /**

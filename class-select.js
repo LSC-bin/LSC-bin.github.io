@@ -4,6 +4,28 @@
  * 클래스 선택 기능 구현 - localStorage 기반
  */
 
+const AppUtilsRef = window.AppUtils || {};
+const {
+    getStoredData: getStoredDataUtil = (key, fallback) => {
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : fallback;
+        } catch {
+            return fallback;
+        }
+    },
+    setStoredData: setStoredDataUtil = (key, value) => {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch (err) {
+            console.warn('[AppUtils] Failed to persist class data', err);
+        }
+    }
+} = AppUtilsRef;
+
+const getStoredData = (key, fallback) => getStoredDataUtil(key, fallback);
+const setStoredData = (key, value) => setStoredDataUtil(key, value);
+
 /**
  * 로그아웃 처리
  */
@@ -137,7 +159,7 @@ function handleClassEdit(card) {
     const classTitle = card.querySelector('h3').textContent;
     
     // 클래스 정보 불러오기 (localStorage에서)
-    const classes = JSON.parse(localStorage.getItem('classes') || '{}');
+    const classes = getStoredData('classes', {});
     const classData = classes[className] || {
         name: classTitle,
         studentCount: card.querySelector('.info-item span')?.textContent || '0명',
@@ -158,9 +180,9 @@ function handleClassDelete(card) {
         if (!confirmed) return;
         
         // 클래스 정보 삭제
-        const classes = JSON.parse(localStorage.getItem('classes') || '{}');
+        const classes = getStoredData('classes', {});
         delete classes[className];
-        localStorage.setItem('classes', JSON.stringify(classes));
+        setStoredData('classes', classes);
         
         // 선택된 클래스인 경우 해제
         if (localStorage.getItem('selectedClass') === className) {
@@ -197,7 +219,7 @@ function showEditClassModal(classData, card) {
     }
     
     // 클래스 정보 업데이트
-    const classes = JSON.parse(localStorage.getItem('classes') || '{}');
+    const classes = getStoredData('classes', {});
     const oldClassName = card.getAttribute('data-class-id');
     classes[newName.trim()] = {
         ...classData,
@@ -244,14 +266,14 @@ function handleClassSelect(card) {
     localStorage.setItem('selectedClassId', className.replace(/\s+/g, '_'));
     
     // 클래스 정보 저장
-    const classes = JSON.parse(localStorage.getItem('classes') || '{}');
+    const classes = getStoredData('classes', {});
     if (!classes[className]) {
         classes[className] = {
             name: className,
             code: classCode || '',
             studentCount: card.querySelector('.info-item span')?.textContent || '0명'
         };
-        localStorage.setItem('classes', JSON.stringify(classes));
+    setStoredData('classes', classes);
     }
 
     // 선택 효과

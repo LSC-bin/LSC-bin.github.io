@@ -3,6 +3,27 @@
  * 수업 게시물 생성 페이지 로직
  */
 
+const AppUtilsRef = window.AppUtils || {};
+const {
+    getStoredArray: getStoredArrayUtil = (key, fallback = []) => {
+        try {
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        } catch {
+            return fallback;
+        }
+    },
+    setStoredArray: setStoredArrayUtil = (key, value) => {
+        try {
+            localStorage.setItem(key, JSON.stringify(value || []));
+        } catch (err) {
+            console.warn('[AppUtils] Failed to persist sessions', err);
+        }
+    }
+} = AppUtilsRef;
+
+const getStoredArray = (key, fallback = []) => getStoredArrayUtil(key, fallback);
+const setStoredArray = (key, value) => setStoredArrayUtil(key, value);
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('session-form');
     const dateInput = document.getElementById('session-date');
@@ -28,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sessionId = `${date}-${number}`;
 
         // 기존 세션 목록 가져오기
-        const sessions = JSON.parse(localStorage.getItem('sessions') || '[]');
+        const sessions = getStoredArray('sessions');
 
         // 중복 확인
         if (sessions.find(s => s.id === sessionId)) {
@@ -70,7 +91,7 @@ function saveSession(title, date, number, sessionId, sessions) {
     });
 
     // localStorage에 저장
-    localStorage.setItem('sessions', JSON.stringify(filteredSessions));
+    setStoredArray('sessions', filteredSessions);
 
     showAlert('수업 게시물이 저장되었습니다!', 'success').then(() => {
         window.location.href = 'index.html';

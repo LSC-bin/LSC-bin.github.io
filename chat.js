@@ -11,6 +11,32 @@
 // sessions/{classId}/chat/messages/{messageId}
 // { text, sender, timestamp }
 
+const AppUtilsRef = window.AppUtils || {};
+const {
+    escapeHtml: escapeHtmlUtil = (text) => String(text ?? ''),
+    generateId: generateIdUtil = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+    getStoredData: getStoredDataUtil = (key, fallback) => {
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : fallback;
+        } catch {
+            return fallback;
+        }
+    },
+    setStoredData: setStoredDataUtil = (key, value) => {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch (err) {
+            console.warn('[AppUtils] Failed to persist chat data', err);
+        }
+    }
+} = AppUtilsRef;
+
+const escapeHtml = (text) => escapeHtmlUtil(text);
+const generateId = (prefix) => generateIdUtil(prefix);
+const getStoredData = (key, fallback) => getStoredDataUtil(key, fallback);
+const setStoredData = (key, value) => setStoredDataUtil(key, value);
+
 let chatMessagesData = [
     { id: 1, sender: "학생A", text: "오늘 수업 진짜 재밌었어요!", timestamp: new Date() },
     { id: 2, sender: "학생B", text: "AI가 어렵지만 흥미로워요.", timestamp: new Date() },
@@ -19,7 +45,7 @@ let chatMessagesData = [
 
 // 현재 사용자 정보
 const currentUser = {
-    id: 'user_' + Date.now(),
+    id: generateId('user'),
     name: localStorage.getItem('userName') || '익명'
 };
 
@@ -30,9 +56,9 @@ const sendChat = document.getElementById("sendChat");
 
 // localStorage에서 채팅 불러오기
 function loadChatHistory() {
-    const saved = localStorage.getItem('groupChatHistory');
-    if (saved) {
-        chatMessagesData = JSON.parse(saved);
+    const saved = getStoredData('groupChatHistory', null);
+    if (Array.isArray(saved)) {
+        chatMessagesData = saved;
         renderChat();
     } else {
         // 초기 채팅 렌더링
@@ -42,7 +68,7 @@ function loadChatHistory() {
 
 // 채팅 저장
 function saveChatHistory() {
-    localStorage.setItem('groupChatHistory', JSON.stringify(chatMessagesData));
+    setStoredData('groupChatHistory', chatMessagesData);
 }
 
 // ===================================
@@ -98,7 +124,7 @@ function handleSendMessage() {
     if (!val) return;
     
     chatMessagesData.push({
-        id: Date.now(),
+        id: generateId('msg'),
         sender: currentUser.name,
         text: val,
         timestamp: new Date()
@@ -129,7 +155,7 @@ function handleSendMessage() {
         const randomResponse = fakeResponses[Math.floor(Math.random() * fakeResponses.length)];
         
         chatMessagesData.push({
-            id: Date.now(),
+            id: generateId('msg'),
             sender: randomUser,
             text: randomResponse,
             timestamp: new Date()
@@ -206,12 +232,6 @@ function renderWordCloud() {
 // ===================================
 function scrollToBottom() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
 }
 
 // ===================================

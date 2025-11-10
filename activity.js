@@ -5,9 +5,36 @@
  * TODO: Firebase 연결 시
  */
 
+const AppUtilsRef = window.AppUtils || {};
+const {
+    escapeHtml: escapeHtmlUtil = (text) => String(text ?? ''),
+    getTimeAgo: getTimeAgoUtil = () => '',
+    generateId: generateIdUtil = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+    getStoredArray: getStoredArrayUtil = (key, fallback = []) => {
+        try {
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        } catch {
+            return fallback;
+        }
+    },
+    setStoredArray: setStoredArrayUtil = (key, value) => {
+        try {
+            localStorage.setItem(key, JSON.stringify(value || []));
+        } catch (err) {
+            console.warn('[AppUtils] Failed to persist activity data', err);
+        }
+    }
+} = AppUtilsRef;
+
+const escapeHtml = (text) => escapeHtmlUtil(text);
+const getTimeAgo = (date) => getTimeAgoUtil(date);
+const generateId = (prefix) => generateIdUtil(prefix);
+const getStoredArray = (key, fallback = []) => getStoredArrayUtil(key, fallback);
+const setStoredArray = (key, value) => setStoredArrayUtil(key, value);
+
 // 전역 변수
 let currentUser = {
-    id: 'user_' + Math.random().toString(36).substr(2, 9),
+    id: generateId('user'),
     name: localStorage.getItem('userName') || '학생' + Math.floor(Math.random() * 100)
 };
 
@@ -266,7 +293,7 @@ async function handleSubmitPost() {
         const description = postTitle ? null : (postContent.split('\n')[0].substring(0, 60) + (postContent.split('\n')[0].length > 60 ? '...' : ''));
         
         const postData = {
-            id: 'post_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+            id: generateId('post'),
             title: postTitle,
             description: description,
             text: postContent,
@@ -286,9 +313,9 @@ async function handleSubmitPost() {
         const storageKey = sessionId ? `session_posts_${sessionId}` : 'activity_posts';
 
         // localStorage에 저장 (sessionId 기반)
-        const storedPosts = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        const storedPosts = getStoredArray(storageKey);
         storedPosts.unshift(postData);
-        localStorage.setItem(storageKey, JSON.stringify(storedPosts));
+        setStoredArray(storageKey, storedPosts);
         
         // posts 배열에 추가
         posts.unshift(postData);
@@ -349,7 +376,7 @@ function loadPostsForSession(sessionId) {
     if (!activityBoard) return;
 
     // localStorage에서 해당 sessionId의 게시글 불러오기
-    const storedPosts = JSON.parse(localStorage.getItem(`session_posts_${sessionId}`) || '[]');
+    const storedPosts = getStoredArray(`session_posts_${sessionId}`);
     posts = storedPosts;
     
     // 더미 데이터 추가 (처음 로드 시)
@@ -416,7 +443,7 @@ function loadPostsForSession(sessionId) {
             }
         ];
         posts = dummyPosts;
-        localStorage.setItem(`session_posts_${sessionId}`, JSON.stringify(posts));
+        setStoredArray(`session_posts_${sessionId}`, posts);
     }
     
     // UI에 렌더링
@@ -447,7 +474,7 @@ function loadPosts() {
     }
 
     // localStorage에서 게시글 불러오기 (기존 방식)
-    const storedPosts = JSON.parse(localStorage.getItem('activity_posts') || '[]');
+    const storedPosts = getStoredArray('activity_posts');
     posts = storedPosts;
     
     // UI 업데이트
@@ -740,39 +767,17 @@ async function submitComment(postId) {
  */
 function formatRelativeTime(timestamp) {
     if (!timestamp) return '';
-    
-    const date = timestamp.toDate();
-    const now = new Date();
-    const diff = now - date;
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
 
-    if (seconds < 60) return '방금 전';
-    if (minutes < 60) return `${minutes}분 전`;
-    if (hours < 24) return `${hours}시간 전`;
-    if (days < 7) return `${days}일 전`;
-    
-    return date.toLocaleDateString('ko-KR');
-}
-
-/**
- * HTML 이스케이프
- */
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+    const date = typeof timestamp.toDate === 'function' ? timestamp.toDate() : new Date(timestamp);
+    return getTimeAgo(date);
 }
 
 /**
  * 로컬 스토리지에서 불러오기 (오프라인 모드)
  */
 function loadFromLocalStorage() {
-    const localPosts = localStorage.getItem('activity_posts');
-    if (localPosts) {
-        posts = JSON.parse(localPosts);
+    posts = getStoredArray('activity_posts');
+    if (posts.length > 0) {
         renderPosts();
     }
 }
@@ -787,7 +792,7 @@ function saveToLocalStorage() {
         sessionId = getCurrentActivitySessionId();
     }
     const storageKey = sessionId ? `session_posts_${sessionId}` : 'activity_posts';
-    localStorage.setItem(storageKey, JSON.stringify(posts));
+    setStoredArray(storageKey, posts);
 }
 
 /**

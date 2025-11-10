@@ -4,6 +4,52 @@
  * Firebase 구조 고려, 현재는 localStorage 기반
  */
 
+const AppUtilsRef = window.AppUtils || {};
+const {
+    escapeHtml: escapeHtmlUtil = (text) => String(text ?? ''),
+    formatDate: formatDateUtil = (date, options) => new Date(date).toLocaleDateString('ko-KR', options),
+    getTimeAgo: getTimeAgoUtil = () => '',
+    generateId: generateIdUtil = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+    getStoredArray: getStoredArrayUtil = (key, fallback = []) => {
+        try {
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        } catch {
+            return fallback;
+        }
+    },
+    setStoredArray: setStoredArrayUtil = (key, value) => {
+        try {
+            localStorage.setItem(key, JSON.stringify(value || []));
+        } catch (err) {
+            console.warn('[AppUtils] Failed to persist activity-session array data', err);
+        }
+    },
+    getStoredData: getStoredDataUtil = (key, fallback) => {
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : fallback;
+        } catch {
+            return fallback;
+        }
+    },
+    setStoredData: setStoredDataUtil = (key, value) => {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch (err) {
+            console.warn('[AppUtils] Failed to persist activity-session data', err);
+        }
+    }
+} = AppUtilsRef;
+
+const escapeHtml = (text) => escapeHtmlUtil(text);
+const formatDateFromUtils = (date, options) => formatDateUtil(date, options);
+const getTimeAgoFromUtils = (date) => getTimeAgoUtil(date);
+const generateId = (prefix) => generateIdUtil(prefix);
+const getStoredArray = (key, fallback = []) => getStoredArrayUtil(key, fallback);
+const setStoredArray = (key, value) => setStoredArrayUtil(key, value);
+const getStoredData = (key, fallback) => getStoredDataUtil(key, fallback);
+const setStoredData = (key, value) => setStoredDataUtil(key, value);
+
 // 전역 변수
 const memoBoard = document.getElementById("memoBoard");
 const addMemoBtn = document.getElementById("addMemo");
@@ -17,7 +63,7 @@ let currentEditingMemoIndex = null;
 
 // 현재 사용자 정보
 const currentUser = {
-    id: localStorage.getItem('userId') || 'user_' + Math.random().toString(36).substr(2, 9),
+    id: localStorage.getItem('userId') || generateId('user'),
     name: localStorage.getItem('userName') || '학생' + Math.floor(Math.random() * 100)
 };
 
@@ -305,7 +351,7 @@ function setupEventListeners() {
  * 세션 제목 로드
  */
 function loadSessionTitle(sessionId) {
-    const sessions = JSON.parse(localStorage.getItem('sessions') || '[]');
+    const sessions = getStoredArray('sessions');
     const session = sessions.find(s => s.id === sessionId);
     
     const titleElement = document.getElementById('session-title');
@@ -321,10 +367,10 @@ function loadMemos() {
     if (!currentSessionId) return;
 
     const storageKey = `activity_memos_${currentSessionId}`;
-    const stored = localStorage.getItem(storageKey);
-    
-    if (stored) {
-        memos = JSON.parse(stored);
+    const stored = getStoredData(storageKey, null);
+
+    if (Array.isArray(stored)) {
+        memos = stored;
     } else {
         // 더미 데이터 (첫 로드 시)
         memos = [
@@ -943,7 +989,7 @@ function submitMemoFromModal() {
 
         // 새 메모 생성
         const newMemo = {
-            id: 'memo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+            id: generateId('memo'),
             title: title,
             text: content,
             files: files,
@@ -1068,45 +1114,21 @@ function deleteMemo(index) {
  */
 function saveMemos() {
     if (!currentSessionId) return;
-    
+
     const storageKey = `activity_memos_${currentSessionId}`;
-    localStorage.setItem(storageKey, JSON.stringify(memos));
+    setStoredData(storageKey, memos);
 }
 
 /**
  * 날짜 포맷팅
  */
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now - date;
-    
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-    
-    if (seconds < 60) return '방금 전';
-    if (minutes < 60) return `${minutes}분 전`;
-    if (hours < 24) return `${hours}시간 전`;
-    if (days < 7) return `${days}일 전`;
-    
-    return date.toLocaleDateString('ko-KR', { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
-    });
+    return getTimeAgoFromUtils(dateString);
 }
 
 /**
  * HTML 이스케이프
  */
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
 /**
  * 프로필 정보 로드
  */
@@ -1192,9 +1214,9 @@ let assignmentData = null;
 // 과제 로드
 function loadAssignment() {
     const sessionId = currentSessionId || 'default';
-    const saved = localStorage.getItem(`assignment_${sessionId}`);
+    const saved = getStoredData(`assignment_${sessionId}`, null);
     if (saved) {
-        assignmentData = JSON.parse(saved);
+        assignmentData = saved;
         renderAssignment();
     }
 }
@@ -1203,7 +1225,7 @@ function loadAssignment() {
 function saveAssignment() {
     const sessionId = currentSessionId || 'default';
     if (assignmentData) {
-        localStorage.setItem(`assignment_${sessionId}`, JSON.stringify(assignmentData));
+        setStoredData(`assignment_${sessionId}`, assignmentData);
     }
 }
 
@@ -1281,7 +1303,7 @@ function renderAssignment() {
     }
 
     if (dateEl && assignmentData.date) {
-        dateEl.textContent = formatDate(assignmentData.date);
+        dateEl.textContent = formatDateFromUtils(assignmentData.date, { style: 'literal' });
     }
 
     if (authorEl && assignmentData.author) {
@@ -1396,7 +1418,7 @@ function openAssignmentViewModal() {
     }
     
     if (dateEl && assignmentData.date) {
-        dateEl.textContent = formatDate(assignmentData.date);
+        dateEl.textContent = formatDateFromUtils(assignmentData.date, { style: 'literal' });
     }
     
     if (authorEl && assignmentData.author) {

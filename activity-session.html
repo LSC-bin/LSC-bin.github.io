@@ -410,6 +410,7 @@
     </div>
 
     <!-- Dialog.js -->
+    <script src="utils/common.js"></script>
     <script src="dialog.js"></script>
     <script src="activity-session.js"></script>
     
@@ -553,7 +554,7 @@
             const sessionsList = document.getElementById('sessions-list');
             if (!sessionsList) return;
 
-            const sessions = JSON.parse(localStorage.getItem('sessions') || '[]');
+            const sessions = (window.AppUtils && AppUtils.getStoredArray) ? AppUtils.getStoredArray('sessions') : JSON.parse(localStorage.getItem('sessions') || '[]');
             const urlParams = new URLSearchParams(window.location.search);
             const currentSessionId = urlParams.get('sessionId');
 
@@ -604,13 +605,6 @@
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
             return `${month}/${day}`;
-        }
-
-        // HTML 이스케이프
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
         }
 
         // 새로고침 버튼
