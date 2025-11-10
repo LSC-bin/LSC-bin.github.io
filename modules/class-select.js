@@ -99,15 +99,19 @@ function initClassSelect() {
 function initClassCards() {
     const classCards = document.querySelectorAll('.class-card:not(.add-class-card)');
     classCards.forEach(card => {
-        // 기본 선택 이벤트
-        const cardContent = card.querySelector('h3, .class-card-info');
-        if (cardContent) {
-            cardContent.style.cursor = 'pointer';
-            cardContent.addEventListener('click', (e) => {
-                e.stopPropagation();
-                handleClassSelect(card);
-            });
-        }
+        // 기본 선택 이벤트 (카드 전체 클릭 가능하도록 개선)
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', (e) => {
+            const target = e.target instanceof Element ? e.target : e.target?.parentElement;
+
+            // 관리 버튼을 클릭한 경우에는 선택 이벤트 무시
+            if (target && target.closest('.class-card-actions')) {
+                return;
+            }
+
+            e.stopPropagation();
+            handleClassSelect(card);
+        });
 
         // 관리 버튼 추가 (수정, 삭제)
         if (!card.querySelector('.class-card-actions')) {
