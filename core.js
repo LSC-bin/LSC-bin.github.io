@@ -72,46 +72,6 @@ function checkAuthAndRedirect() {
 }
 
 /**
- * 사이드바 초기화
- */
-function initSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const menuBtn = document.getElementById('menu-btn');
-    const navbarSidebarToggle = document.getElementById('navbar-sidebar-toggle');
-    
-    if (!sidebar) return;
-
-    // Navbar 사이드바 토글 기능 (아이콘만 보이기/전체 보이기)
-    if (navbarSidebarToggle) {
-        navbarSidebarToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed');
-            // 상태 저장
-            setStoredValue('sidebarCollapsed', sidebar.classList.contains('collapsed'));
-        });
-
-        // 저장된 상태 불러오기
-        const savedSidebarState = getStoredValue('sidebarCollapsed');
-        if (savedSidebarState === 'true') {
-            sidebar.classList.add('collapsed');
-        }
-    }
-
-    // 모바일 메뉴 토글
-    if (menuBtn) {
-        menuBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-        });
-    }
-
-    // 반응형 사이드바 처리
-    window.addEventListener('resize', () => {
-        if (window.innerWidth > 768) {
-            sidebar.classList.remove('active');
-        }
-    });
-}
-
-/**
  * 다크 모드 토글 초기화
  */
 function toggleDarkMode() {
@@ -195,6 +155,9 @@ async function initApp(options = {}) {
 
 if (typeof window !== 'undefined') {
     window.initApp = initApp;
+    if (typeof window.initSidebar === 'function') {
+        window.initSidebar(window.document.querySelector('.sidebar'));
+    }
 }
 
 /**
@@ -205,7 +168,6 @@ if (typeof module !== 'undefined' && module.exports) {
         checkLoginStatus,
         checkClassSelected,
         checkAuthAndRedirect,
-        initSidebar,
         toggleDarkMode,
         loadClassInfo,
         generateClassCode,
