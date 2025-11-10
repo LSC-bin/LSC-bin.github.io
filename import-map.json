@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "@utils/": "./utils/",
+    "@modules/": "./modules/",
+    "@pages/": "./pages/"
+  }
+}
