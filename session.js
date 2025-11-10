@@ -4,33 +4,21 @@
  * Activity + Ask 통합 UI 리디자인
  */
 
+const AuthServiceRef = window.AuthService || {};
 const AppUtilsRef = window.AppUtils || {};
 const {
     escapeHtml: escapeHtmlUtil = (text) => String(text ?? ''),
     getTimeAgo: getTimeAgoUtil = () => '',
     generateId: generateIdUtil = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-    getStoredData: getStoredDataUtil = (key, fallback) => {
-        try {
-            const raw = localStorage.getItem(key);
-            return raw ? JSON.parse(raw) : fallback;
-        } catch {
-            return fallback;
-        }
-    },
-    setStoredData: setStoredDataUtil = (key, value) => {
-        try {
-            localStorage.setItem(key, JSON.stringify(value));
-        } catch (err) {
-            console.warn('[AppUtils] Failed to save session data', err);
-        }
-    }
+    getStoredData: getStoredDataUtil = (key, fallback) => fallback,
+    setStoredData: setStoredDataUtil = () => {}
 } = AppUtilsRef;
 
 const escapeHtml = (text) => escapeHtmlUtil(text);
 const getTimeAgo = (date) => getTimeAgoUtil(date);
 const generateId = (prefix) => generateIdUtil(prefix);
-const getStoredData = (key, fallback) => getStoredDataUtil(key, fallback);
-const setStoredData = (key, value) => setStoredDataUtil(key, value);
+const getStoredData = (key, fallback) => (typeof getStoredDataUtil === 'function' ? getStoredDataUtil(key, fallback) : fallback);
+const setStoredData = (key, value) => (typeof setStoredDataUtil === 'function' ? setStoredDataUtil(key, value) : undefined);
 
 // 전역 변수
 let questions = [];
@@ -38,18 +26,45 @@ let chatMessages = [];
 let materials = [];
 
 // 현재 사용자 정보
-const currentUser = {
+let currentUser = {
     id: generateId('user'),
-    name: localStorage.getItem('userName') || '학생' + Math.floor(Math.random() * 100)
+    name: '학생' + Math.floor(Math.random() * 100)
 };
 
 /**
  * 초기화 함수
  */
 document.addEventListener('DOMContentLoaded', () => {
+    initSessionModule();
+});
+
+async function initSessionModule() {
+    if (typeof initApp === 'function') {
+        try {
+            const user = await initApp();
+            if (user) {
+                currentUser = {
+                    id: user.id || generateId('user'),
+                    name: user.name || currentUser.name
+                };
+            }
+        } catch (error) {
+            console.warn('[session] 세션 초기화에 실패했습니다:', error);
+            return;
+        }
+    } else if (typeof AuthServiceRef.getCurrentUser === 'function') {
+        const user = AuthServiceRef.getCurrentUser();
+        if (user) {
+            currentUser = {
+                id: user.id || generateId('user'),
+                name: user.name || currentUser.name
+            };
+        }
+    }
+
     // sessionId 가져오기 (session-detail.js와 연동)
     const sessionId = getCurrentSessionId();
-    
+
     if (!sessionId) {
         // session-detail.js가 로드되기 전일 수 있으므로 직접 확인
         const urlParams = new URLSearchParams(window.location.search);
@@ -142,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-});
+}
 
 /**
  * 질문 제출 처리
@@ -481,7 +496,7 @@ function closeMaterialModalFunc() {
 }
 
 /**
- * localStorage 저장/로드 함수들
+ * 세션 데이터 저장/로드 함수들
  */
 function loadQuestionsForSession(sessionId) {
     if (!sessionId) return;

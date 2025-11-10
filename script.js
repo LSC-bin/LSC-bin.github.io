@@ -12,26 +12,20 @@ const switchMode = document.getElementById('switch-mode');
 const body = document.body;
 
 // 유틸리티 모듈 참조
+const AuthServiceRef = window.AuthService || {};
 const AppUtilsRef = window.AppUtils || {};
 const {
     escapeHtml: escapeHtmlUtil = (text) => String(text ?? ''),
     formatDate: formatDateUtil = (date, options) => new Date(date).toLocaleDateString('ko-KR', options),
     formatTime: formatTimeUtil = (date, options) => new Date(date).toLocaleTimeString('ko-KR', options || { hour: '2-digit', minute: '2-digit' }),
     getRelativeTime: getRelativeTimeUtil = () => '',
-    getStoredArray: getStoredArrayUtil = (key, fallback = []) => {
-        try {
-            return JSON.parse(localStorage.getItem(key) || '[]');
-        } catch {
-            return fallback;
-        }
-    },
-    setStoredArray: setStoredArrayUtil = (key, value) => {
-        try {
-            localStorage.setItem(key, JSON.stringify(value || []));
-        } catch (err) {
-            console.warn('[AppUtils] Failed to persist data', err);
-        }
-    }
+    getStoredArray: getStoredArrayUtil = (key, fallback = []) => Array.isArray(fallback) ? [...fallback] : [],
+    setStoredArray: setStoredArrayUtil = () => {},
+    getStoredData: getStoredDataUtil = (key, fallback) => (fallback === undefined ? null : fallback),
+    setStoredData: setStoredDataUtil = () => {},
+    getStoredValue: getStoredValueUtil = (key, fallback = null) => fallback,
+    setStoredValue: setStoredValueUtil = () => {},
+    removeStoredData: removeStoredDataUtil = () => {}
 } = AppUtilsRef;
 
 function escapeHtml(text) {
@@ -50,13 +44,13 @@ function getRelativeTime(date, options) {
     return getRelativeTimeUtil(date, options);
 }
 
-function getStoredArray(key, fallback = []) {
-    return getStoredArrayUtil(key, fallback);
-}
-
-function setStoredArray(key, value) {
-    setStoredArrayUtil(key, value);
-}
+const getStoredArray = (key, fallback = []) => getStoredArrayUtil(key, fallback);
+const setStoredArray = (key, value) => setStoredArrayUtil(key, value);
+const getStoredData = (key, fallback) => (typeof getStoredDataUtil === 'function' ? getStoredDataUtil(key, fallback) : fallback);
+const setStoredData = (key, value) => (typeof setStoredDataUtil === 'function' ? setStoredDataUtil(key, value) : undefined);
+const getStoredValue = (key, fallback = null) => (typeof getStoredValueUtil === 'function' ? getStoredValueUtil(key, fallback) : fallback);
+const setStoredValue = (key, value) => (typeof setStoredValueUtil === 'function' ? setStoredValueUtil(key, value) : undefined);
+const removeStoredValue = (key) => (typeof removeStoredDataUtil === 'function' ? removeStoredDataUtil(key) : undefined);
 
 // 사이드바 초기화는 core.js의 initSidebar() 사용
 
@@ -390,39 +384,49 @@ function handleLogout() {
         if (!confirmed) {
             return;
         }
-        
-        // localStorage에서 로그인 정보 제거
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('userRole');
-        localStorage.removeItem('userName');
-        localStorage.removeItem('userEmail');
-        localStorage.removeItem('userPhone');
-        localStorage.removeItem('userBio');
-        localStorage.removeItem('selectedClass');
-        localStorage.removeItem('selectedClassId');
-        
-        // 로그인 페이지로 이동
-        window.location.href = 'login.html';
+
+        const signOut = AuthServiceRef && typeof AuthServiceRef.signOut === 'function'
+            ? AuthServiceRef.signOut()
+            : Promise.resolve();
+
+        Promise.resolve(signOut)
+            .catch(error => {
+                console.warn('[script] 로그아웃 처리 중 오류가 발생했습니다:', error);
+            })
+            .finally(() => {
+                removeStoredValue('selectedClass');
+                removeStoredValue('selectedClassId');
+                // 로그인 페이지로 이동
+                window.location.href = 'login.html';
+            });
     });
 }
 
 /**
  * 초기화 함수
  */
-function init() {
+async function init() {
     console.log('ClassBoard Design 시스템이 초기화되었습니다.');
-    
+
+    if (typeof initApp === 'function') {
+        try {
+            await initApp();
+        } catch (error) {
+            console.warn('[script] 초기화 중 인증이 필요합니다:', error);
+            return;
+        }
+    } else if (typeof checkAuthAndRedirect === 'function') {
+        if (!checkAuthAndRedirect()) {
+            return;
+        }
+    }
+
     // Core 기능 초기화 (core.js)
     if (typeof initSidebar === 'function') {
         initSidebar();
     }
     if (typeof toggleDarkMode === 'function') {
         toggleDarkMode();
-    }
-    
-    // [ClassBoard Update] 로그인 및 클래스 선택 상태 검증
-    if (typeof checkAuthAndRedirect === 'function') {
-    checkAuthAndRedirect();
     }
     
     // 클래스 정보 로드 및 표시
@@ -581,7 +585,7 @@ function loadSessions() {
     const sessionsGrid = document.getElementById('sessions-grid');
     if (!sessionsGrid) return;
 
-    // localStorage에서 세션 목록 가져오기
+    // 저장된 세션 목록 가져오기
     const sessions = getStoredArray('sessions');
 
     if (sessions.length === 0) {
@@ -645,7 +649,7 @@ function loadSessionsForBoard(tableBodyId) {
     const tableBody = document.getElementById(tableBodyId);
     if (!tableBody) return;
 
-    // localStorage에서 세션 목록 가져오기 (모든 세션 표시)
+    // 저장된 세션 목록 가져오기 (모든 세션 표시)
     const sessions = getStoredArray('sessions');
 
     if (sessions.length === 0) {
@@ -746,7 +750,7 @@ function deleteSession(sessionId, tableBodyId) {
     showConfirm('정말 삭제하시겠습니까?', 'danger').then(confirmed => {
         if (!confirmed) return;
         
-        // localStorage에서 세션 삭제
+        // 저장된 세션 데이터에서 삭제
         const sessions = getStoredArray('sessions');
         const filteredSessions = sessions.filter(s => s.id !== sessionId);
         setStoredArray('sessions', filteredSessions);
@@ -782,21 +786,25 @@ function initAskBoardModal() {
  * 프로필 정보 로드 및 표시
  */
 function loadProfileInfo() {
-    const userName = localStorage.getItem('userName');
-    const selectedClass = localStorage.getItem('selectedClass');
-    
+    const authUser = typeof AuthServiceRef.getCurrentUser === 'function'
+        ? AuthServiceRef.getCurrentUser()
+        : null;
+    const userName = authUser?.name || getStoredValue('userName');
+    const userRole = authUser?.role || '교사';
+    const selectedClass = getStoredValue('selectedClass');
+
     const profileName = document.getElementById('profile-name');
     const profileRole = document.getElementById('profile-role');
     const profileClassName = document.getElementById('profile-class-name');
-    
+
     if (profileName && userName) {
         profileName.textContent = userName;
     }
-    
+
     if (profileRole && userName) {
-        profileRole.textContent = '교사';
+        profileRole.textContent = userRole;
     }
-    
+
     if (profileClassName && selectedClass) {
         profileClassName.textContent = selectedClass;
     }
@@ -945,7 +953,7 @@ function handleAnnouncementClear() {
     showConfirm('모든 공지를 삭제하시겠습니까?', 'danger').then(confirmed => {
         if (!confirmed) return;
 
-        localStorage.removeItem(ANNOUNCEMENT_STORAGE_KEY);
+        removeStoredValue(ANNOUNCEMENT_STORAGE_KEY);
         renderAnnouncements([]);
         showAlert('전체 공지가 삭제되었습니다.', 'success');
     });
@@ -1044,10 +1052,9 @@ function renderAnnouncementAllList(announcements) {
 
 function readAnnouncements() {
     try {
-        const stored = localStorage.getItem(ANNOUNCEMENT_STORAGE_KEY);
-        const parsed = stored ? JSON.parse(stored) : [];
-        if (!Array.isArray(parsed)) return [];
-        return parsed.map(item => ({
+        const stored = getStoredData(ANNOUNCEMENT_STORAGE_KEY, []);
+        if (!Array.isArray(stored)) return [];
+        return stored.map(item => ({
             ...item,
             read: Boolean(item.read)
         }));
@@ -1058,7 +1065,7 @@ function readAnnouncements() {
 }
 
 function saveAnnouncements(announcements) {
-    localStorage.setItem(ANNOUNCEMENT_STORAGE_KEY, JSON.stringify(announcements));
+    setStoredData(ANNOUNCEMENT_STORAGE_KEY, announcements);
 }
 
 function sortAnnouncements(announcements) {
@@ -1265,16 +1272,15 @@ function markAllNotificationsRead() {
 
 function readStoredNotifications() {
     try {
-        const stored = localStorage.getItem(NOTIFICATION_STORAGE_KEY);
-        const parsed = stored ? JSON.parse(stored) : [];
-        return Array.isArray(parsed) ? parsed : [];
+        const stored = getStoredData(NOTIFICATION_STORAGE_KEY, []);
+        return Array.isArray(stored) ? stored : [];
     } catch {
         return [];
     }
 }
 
 function saveStoredNotifications(notifications) {
-    localStorage.setItem(NOTIFICATION_STORAGE_KEY, JSON.stringify(notifications));
+    setStoredData(NOTIFICATION_STORAGE_KEY, notifications);
 }
 
 function updateNotificationBadge(unreadCount) {

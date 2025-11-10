@@ -4,20 +4,34 @@
  * 상태 관리, 사이드바, 다크모드 등 공통 기능
  */
 
+const AuthServiceRef = typeof window !== 'undefined' ? (window.AuthService || {}) : {};
+const AppUtilsRef = typeof window !== 'undefined' ? (window.AppUtils || {}) : {};
+const {
+    getStoredValue: getStoredValueUtil = () => null,
+    setStoredValue: setStoredValueUtil = () => {}
+} = AppUtilsRef;
+
+const getStoredValue = (key, fallback = null) => getStoredValueUtil(key, fallback);
+const setStoredValue = (key, value) => setStoredValueUtil(key, value);
+
 /**
  * 로그인 상태 확인
  */
-function checkLoginStatus() {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    
-    if (!isLoggedIn || isLoggedIn !== 'true') {
-        if (typeof showAlert === 'function') {
-            showAlert('로그인이 필요합니다.', 'warning').then(() => {
-                window.location.href = 'login.html';
-            });
-        } else {
-            alert('로그인이 필요합니다.');
-            window.location.href = 'login.html';
+function checkLoginStatus(options = {}) {
+    const auth = AuthServiceRef;
+    const isLoggedIn = typeof auth.isAuthenticated === 'function' ? auth.isAuthenticated() : false;
+
+    if (!isLoggedIn) {
+        if (options.redirect !== false) {
+            const redirectTo = options.loginPage || 'login.html';
+            if (typeof showAlert === 'function') {
+                showAlert('로그인이 필요합니다.', 'warning').then(() => {
+                    window.location.href = redirectTo;
+                });
+            } else {
+                alert('로그인이 필요합니다.');
+                window.location.href = redirectTo;
+            }
         }
         return false;
     }
@@ -28,7 +42,7 @@ function checkLoginStatus() {
  * 클래스 선택 상태 확인
  */
 function checkClassSelected() {
-    const selectedClass = localStorage.getItem('selectedClass');
+    const selectedClass = getStoredValue('selectedClass');
     
     if (!selectedClass) {
         if (typeof showAlert === 'function') {
@@ -72,11 +86,11 @@ function initSidebar() {
         navbarSidebarToggle.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
             // 상태 저장
-            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            setStoredValue('sidebarCollapsed', sidebar.classList.contains('collapsed'));
         });
 
         // 저장된 상태 불러오기
-        const savedSidebarState = localStorage.getItem('sidebarCollapsed');
+        const savedSidebarState = getStoredValue('sidebarCollapsed');
         if (savedSidebarState === 'true') {
             sidebar.classList.add('collapsed');
         }
@@ -106,8 +120,8 @@ function toggleDarkMode() {
     
     if (!switchMode) return;
 
-    // localStorage에서 이전 설정 불러오기
-    const savedTheme = localStorage.getItem('theme');
+    // 저장된 테마 설정 불러오기
+    const savedTheme = getStoredValue('theme');
     if (savedTheme === 'dark') {
         body.classList.add('dark');
         switchMode.checked = true;
@@ -116,10 +130,10 @@ function toggleDarkMode() {
     switchMode.addEventListener('change', () => {
         if (switchMode.checked) {
             body.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
+            setStoredValue('theme', 'dark');
         } else {
             body.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
+            setStoredValue('theme', 'light');
         }
     });
 }
@@ -128,8 +142,8 @@ function toggleDarkMode() {
  * 클래스 정보 로드 및 표시
  */
 function loadClassInfo() {
-    const selectedClass = localStorage.getItem('selectedClass');
-    const selectedClassId = localStorage.getItem('selectedClassId');
+    const selectedClass = getStoredValue('selectedClass');
+    const selectedClassId = getStoredValue('selectedClassId');
     
     // 대시보드 상단에 클래스명 표시
     const classDisplayElements = document.querySelectorAll('.current-class-name, [data-class-name]');
@@ -156,6 +170,34 @@ function generateClassCode(className) {
 }
 
 /**
+ * 애플리케이션 공통 초기화
+ */
+async function initApp(options = {}) {
+    const auth = AuthServiceRef;
+    if (!auth || typeof auth.requireSession !== 'function') {
+        console.warn('[core] AuthService가 초기화되지 않았습니다.');
+        return null;
+    }
+
+    const sessionOptions = {
+        redirectTo: options.loginPage || 'login.html',
+        redirect: options.redirect !== false
+    };
+
+    try {
+        const user = await auth.requireSession(sessionOptions);
+        return user;
+    } catch (error) {
+        console.warn('[core] 세션 확인 중 오류가 발생했습니다:', error);
+        throw error;
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.initApp = initApp;
+}
+
+/**
  * 내보내기
  */
 if (typeof module !== 'undefined' && module.exports) {
@@ -166,7 +208,8 @@ if (typeof module !== 'undefined' && module.exports) {
         initSidebar,
         toggleDarkMode,
         loadClassInfo,
-        generateClassCode
+        generateClassCode,
+        initApp
     };
 }
 
