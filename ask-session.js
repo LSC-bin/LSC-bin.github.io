@@ -167,7 +167,7 @@ function initAsk() {
     loadMessages();
     
     // Ask 게시글 기능 초기화는 ask-session.html 또는 session.html에서만
-    // (index.html의 ask-content는 게시판 테이블만 표시하므로 initAskPosts 불필요)
+    // (main-session.html의 ask-content는 게시판 테이블만 표시하므로 initAskPosts 불필요)
     const askBoard = document.getElementById('ask-board');
     if (askBoard) {
         initAskPosts();
@@ -376,7 +376,7 @@ function loadMessages() {
         return;
     }
 
-    // index.html에서 사용할 경우 기존 로직 유지
+    // main-session.html에서 사용할 경우 기존 로직 유지
     if (messages.length === 0) {
         messages = [
             {

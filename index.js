@@ -1,5 +1,5 @@
 /**
- * login.js
+ * index.js
  * AuthService를 활용한 로그인 컨트롤러
  */
 (function () {

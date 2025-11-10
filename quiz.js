@@ -155,7 +155,7 @@ function loadQuizList() {
         return;
     }
 
-    // index.html에서 사용할 경우 기존 로직 유지
+    // main-session.html에서 사용할 경우 기존 로직 유지
     const quizList = [
         {
             id: 'quiz1',

@@ -154,7 +154,7 @@
         }
 
         if (options.redirect !== false && typeof global.window !== 'undefined') {
-            const redirectTo = options.redirectTo || options.loginPage || 'login.html';
+            const redirectTo = options.redirectTo || options.loginPage || 'index.html';
             if (redirectTo) {
                 global.window.location.href = redirectTo;
             }

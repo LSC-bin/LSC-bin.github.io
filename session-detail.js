@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!currentSessionId) {
         showAlert('수업 정보를 찾을 수 없습니다.', 'error').then(() => {
-            window.location.href = 'index.html';
+            window.location.href = 'main-session.html';
         });
         return;
     }
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!session) {
         showAlert('수업 정보를 찾을 수 없습니다.', 'error').then(() => {
-            window.location.href = 'index.html';
+            window.location.href = 'main-session.html';
         });
         return;
     }

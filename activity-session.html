@@ -79,7 +79,7 @@
                         </div>
                     </div>
                     <div class="profile-divider"></div>
-                    <a href="index.html" class="profile-menu-item">
+                    <a href="main-session.html" class="profile-menu-item">
                         <i class="bx bx-home"></i>
                         <span>홈으로</span>
                     </a>
@@ -452,7 +452,7 @@
         const navbarBrand = document.querySelector('.navbar-brand');
         if (navbarBrand) {
             navbarBrand.addEventListener('click', () => {
-                window.location.href = 'index.html';
+                window.location.href = 'main-session.html';
             });
         }
 
@@ -464,7 +464,7 @@
                 localStorage.removeItem('isLoggedIn');
                 localStorage.removeItem('userRole');
                 localStorage.removeItem('userName');
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             });
         }
 

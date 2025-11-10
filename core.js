@@ -23,7 +23,7 @@ function checkLoginStatus(options = {}) {
 
     if (!isLoggedIn) {
         if (options.redirect !== false) {
-            const redirectTo = options.loginPage || 'login.html';
+            const redirectTo = options.loginPage || 'index.html';
             if (typeof showAlert === 'function') {
                 showAlert('로그인이 필요합니다.', 'warning').then(() => {
                     window.location.href = redirectTo;
@@ -180,7 +180,7 @@ async function initApp(options = {}) {
     }
 
     const sessionOptions = {
-        redirectTo: options.loginPage || 'login.html',
+        redirectTo: options.loginPage || 'index.html',
         redirect: options.redirect !== false
     };
 
