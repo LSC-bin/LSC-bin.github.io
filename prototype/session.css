@@ -1,0 +1,795 @@
+/**
+ * session.css
+ * AI ClassBoard - Session 페이지 전용 스타일
+ * Activity + Ask 통합 UI 리디자인
+ */
+
+/* ===================================
+   기본 변수
+   =================================== */
+:root {
+    --blue: #3C91E6;
+    --light: #F9F9F9;
+    --grey: #EEE;
+    --dark: #333;
+    --radius: 15px;
+    --shadow: 0 2px 10px rgba(0,0,0,0.1);
+    --shadow-soft: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+body.dark {
+    --light: #2D2628;
+    --grey: #444;
+    --dark: #F9F9F9;
+}
+
+/* ===================================
+   Ask Split Layout (Slido Q&A + 채팅)
+   =================================== */
+
+/* Ask 레이아웃 - 3단 분할 */
+.ask-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+}
+
+@media (max-width: 1400px) {
+    .ask-layout {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .wordcloud-section {
+        display: none;
+    }
+}
+
+@media (max-width: 1024px) {
+    .ask-layout {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .wordcloud-section {
+        display: flex;
+    }
+}
+
+/* Slido Q&A 섹션 (왼쪽) */
+.slido-section {
+    background: var(--light);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 300px);
+    min-height: 600px;
+}
+
+body.dark .slido-section {
+    background: #2D2628;
+    border: 1px solid #444;
+}
+
+.slido-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--grey);
+}
+
+body.dark .slido-header {
+    border-bottom-color: #444;
+}
+
+.slido-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin: 0;
+}
+
+body.dark .slido-header h3 {
+    color: var(--light);
+}
+
+.slido-header i {
+    font-size: 1.5rem;
+    color: var(--blue);
+}
+
+/* 질문 목록 */
+.question-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-right: 5px;
+}
+
+.question-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.question-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.question-list::-webkit-scrollbar-thumb {
+    background: var(--grey);
+    border-radius: 3px;
+}
+
+body.dark .question-list::-webkit-scrollbar-thumb {
+    background: #555;
+}
+
+.question-item {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+body.dark .question-item {
+    background: #342E37;
+    border: 1px solid #444;
+}
+
+.question-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.question-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.question-author {
+    font-weight: 600;
+    color: var(--blue);
+    font-size: 0.9rem;
+}
+
+.question-time {
+    font-size: 0.85rem;
+    color: #999;
+}
+
+.question-content {
+    color: var(--dark);
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+body.dark .question-content {
+    color: var(--light);
+}
+
+.question-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+body.dark .question-stats {
+    color: #aaa;
+}
+
+.question-stats span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* 질문 입력 폼 */
+.question-form {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid var(--grey);
+}
+
+body.dark .question-form {
+    border-top-color: #444;
+}
+
+.question-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid var(--grey);
+    border-radius: 25px;
+    font-size: 0.95rem;
+    font-family: 'Poppins', 'Noto Sans KR', sans-serif;
+    transition: all 0.3s ease;
+}
+
+body.dark .question-input {
+    background: #342E37;
+    border-color: #444;
+    color: var(--light);
+}
+
+.question-input:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(60, 145, 230, 0.1);
+}
+
+.question-submit-btn {
+    padding: 12px 24px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', 'Noto Sans KR', sans-serif;
+}
+
+.question-submit-btn:hover {
+    background: #2E7AD6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(60, 145, 230, 0.3);
+}
+
+/* WordCloud 섹션 (중앙) */
+.wordcloud-section {
+    background: var(--light);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 300px);
+    min-height: 600px;
+}
+
+body.dark .wordcloud-section {
+    background: #2D2628;
+    border: 1px solid #444;
+}
+
+.wordcloud-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--grey);
+}
+
+body.dark .wordcloud-header {
+    border-bottom-color: #444;
+}
+
+.wordcloud-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin: 0;
+}
+
+body.dark .wordcloud-header h3 {
+    color: var(--light);
+}
+
+.wordcloud-header i {
+    font-size: 1.5rem;
+    color: var(--blue);
+}
+
+.wordcloud-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.wordcloud-container canvas {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+}
+
+.wordcloud-container::before {
+    content: '💭';
+    position: absolute;
+    font-size: 3rem;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* 채팅 섹션 (오른쪽) */
+.chat-section {
+    background: var(--light);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 300px);
+    min-height: 600px;
+}
+
+body.dark .chat-section {
+    background: #2D2628;
+    border: 1px solid #444;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--grey);
+}
+
+body.dark .chat-header {
+    border-bottom-color: #444;
+}
+
+.chat-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin: 0;
+}
+
+body.dark .chat-header h3 {
+    color: var(--light);
+}
+
+.chat-header i {
+    font-size: 1.5rem;
+    color: var(--blue);
+}
+
+.chat-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+body.dark .chat-status {
+    color: #aaa;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: #4CAF50;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* 채팅 창 */
+.chat-window {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: white;
+    border-radius: 12px;
+    min-height: 0;
+}
+
+body.dark .chat-window {
+    background: #342E37;
+    border: 1px solid #444;
+}
+
+.chat-window::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-window::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-window::-webkit-scrollbar-thumb {
+    background: var(--grey);
+    border-radius: 3px;
+}
+
+body.dark .chat-window::-webkit-scrollbar-thumb {
+    background: #555;
+}
+
+/* 채팅 버블 */
+.chat-bubble {
+    max-width: 70%;
+    padding: 12px 16px;
+    border-radius: 20px;
+    background: var(--blue);
+    color: white;
+    align-self: flex-end;
+    word-wrap: break-word;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chat-bubble.other {
+    background: #e5e5e5;
+    color: var(--dark);
+    align-self: flex-start;
+}
+
+body.dark .chat-bubble.other {
+    background: #444;
+    color: var(--light);
+}
+
+.chat-bubble-header {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    opacity: 0.9;
+}
+
+.chat-bubble-time {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    margin-top: 4px;
+    text-align: right;
+}
+
+.chat-bubble.other .chat-bubble-time {
+    text-align: left;
+}
+
+/* 채팅 입력 영역 */
+.chat-input {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid var(--grey);
+}
+
+body.dark .chat-input {
+    border-top-color: #444;
+}
+
+.chat-input-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: var(--grey);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--dark);
+}
+
+body.dark .chat-input-btn {
+    background: #444;
+    color: var(--light);
+}
+
+.chat-input-btn:hover {
+    background: var(--blue);
+    color: white;
+    transform: scale(1.1);
+}
+
+.chat-input-btn i {
+    font-size: 1.2rem;
+}
+
+.chat-input-field {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid var(--grey);
+    border-radius: 25px;
+    font-size: 0.95rem;
+    font-family: 'Poppins', 'Noto Sans KR', sans-serif;
+    transition: all 0.3s ease;
+}
+
+body.dark .chat-input-field {
+    background: #342E37;
+    border-color: #444;
+    color: var(--light);
+}
+
+.chat-input-field:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(60, 145, 230, 0.1);
+}
+
+.chat-send-btn {
+    padding: 12px 24px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', 'Noto Sans KR', sans-serif;
+}
+
+.chat-send-btn:hover {
+    background: #2E7AD6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(60, 145, 230, 0.3);
+}
+
+/* ===================================
+   Materials 탭 스타일
+   =================================== */
+
+.materials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.material-card {
+    background: var(--light);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+body.dark .material-card {
+    background: #2D2628;
+    border: 1px solid #444;
+}
+
+.material-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow);
+}
+
+.material-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--blue);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+    color: white;
+}
+
+.material-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 8px;
+}
+
+body.dark .material-title {
+    color: var(--light);
+}
+
+.material-description {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+body.dark .material-description {
+    color: #aaa;
+}
+
+.material-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #999;
+    padding-top: 12px;
+    border-top: 1px solid var(--grey);
+}
+
+body.dark .material-meta {
+    border-top-color: #444;
+    color: #aaa;
+}
+
+.material-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.btn-download,
+.btn-delete-material {
+    flex: 1;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-download {
+    background: var(--blue);
+    color: white;
+}
+
+.btn-download:hover {
+    background: #2E7AD6;
+}
+
+.btn-delete-material {
+    background: #f5f5f5;
+    color: var(--dark);
+}
+
+body.dark .btn-delete-material {
+    background: #444;
+    color: var(--light);
+}
+
+.btn-delete-material:hover {
+    background: #e0e0e0;
+}
+
+body.dark .btn-delete-material:hover {
+    background: #555;
+}
+
+.btn-upload-material {
+    padding: 12px 24px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', 'Noto Sans KR', sans-serif;
+}
+
+.btn-upload-material:hover {
+    background: #2E7AD6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(60, 145, 230, 0.3);
+}
+
+/* 자료 업로드 폼 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--dark);
+    font-size: 0.95rem;
+}
+
+body.dark .form-group label {
+    color: var(--light);
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--grey);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: 'Poppins', 'Noto Sans KR', sans-serif;
+    transition: all 0.3s ease;
+}
+
+body.dark .form-input,
+body.dark .form-textarea {
+    background: #342E37;
+    border-color: #444;
+    color: var(--light);
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(60, 145, 230, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .ask-layout {
+        grid-template-columns: 1fr;
+        padding: 15px;
+    }
+
+    .slido-section,
+    .wordcloud-section,
+    .chat-section {
+        height: auto;
+        min-height: 400px;
+    }
+
+    .materials-grid {
+        grid-template-columns: 1fr;
+        padding: 15px;
+    }
+}
+
+
+

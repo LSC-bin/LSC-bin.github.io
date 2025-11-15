@@ -1,0 +1,41 @@
+/**
+ * 색상 디자인 토큰
+ */
+
+:root {
+  /* Primary Colors */
+  --color-blue: #3C91E6;
+  --color-blue-light: #6fa3ff;
+  --color-blue-dark: #2d7dd0;
+  
+  /* Secondary Colors */
+  --color-yellow: #FFCE26;
+  --color-orange: #FD7238;
+  --color-red: #DB504A;
+  
+  /* Neutral Colors */
+  --color-light: #F9F9F9;
+  --color-grey: #EEE;
+  --color-dark: #342E37;
+  
+  /* Semantic Colors */
+  --color-success: #4CAF50;
+  --color-warning: #FF9800;
+  --color-error: var(--color-red);
+  --color-info: var(--color-blue);
+  
+  /* Glassmorphism */
+  --color-glass-bg: rgba(255, 255, 255, 0.25);
+  --color-glass-bg-dark: rgba(52, 46, 55, 0.25);
+  --color-glass-border: rgba(255, 255, 255, 0.18);
+}
+
+/* Dark Mode Colors */
+body.dark {
+  --color-light: #1a1a1a;
+  --color-dark: #F9F9F9;
+  --color-glass-bg: rgba(52, 46, 55, 0.25);
+  --color-glass-bg-dark: rgba(255, 255, 255, 0.05);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+}
+

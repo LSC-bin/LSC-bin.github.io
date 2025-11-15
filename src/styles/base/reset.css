@@ -1,0 +1,50 @@
+/**
+ * CSS Reset 및 기본 스타일
+ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-poppins), var(--font-noto-sans), sans-serif;
+  background: linear-gradient(135deg, rgba(60, 145, 230, 0.05) 0%, rgba(253, 114, 56, 0.05) 100%);
+  background-attachment: fixed;
+  color: var(--color-dark);
+  transition: background var(--transition-base), color var(--transition-base);
+  line-height: var(--line-height-normal);
+}
+
+body.dark {
+  background: var(--color-dark);
+  color: var(--color-light);
+}
+
+/* 접근성: 포커스 아웃라인 */
+*:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-focus-visible);
+}
+
+/* 스크린 리더 전용 텍스트 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
