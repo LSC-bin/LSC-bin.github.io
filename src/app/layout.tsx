@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DAoN - Code Editing Redefined",
-  description: "Visualize your entire codebase as an interactive 3D map.",
+  title: "DAy-oN - Code Editing Redefined",
+  description: "Visualize your entire codebase as an interactive code map.",
 };
 
 export default function RootLayout({

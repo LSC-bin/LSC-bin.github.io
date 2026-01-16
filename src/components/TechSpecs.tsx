@@ -22,14 +22,14 @@ export default function TechSpecs() {
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
+                            viewport={{ once: false }}
                         >
                             <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white">
                                 Built for <br />
                                 <span className="text-blue-500">Performance</span>
                             </h2>
                             <p className="text-gray-400 text-lg leading-relaxed mb-8">
-                                We didn't just wrap a website. DAoN is a native-feeling application optimized for handling massive codebases without breaking a sweat.
+                                We didn't just wrap a website. DAy-oN is a native-feeling application optimized for handling massive codebases without breaking a sweat.
                             </p>
 
                             <ul className="space-y-4">
@@ -55,7 +55,7 @@ export default function TechSpecs() {
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
+                            viewport={{ once: false }}
                             className="bg-[#0A0A0A] border border-white/10 rounded-2xl p-8 relative overflow-hidden"
                         >
                             {/* Decorative Grid */}

@@ -1,12 +1,54 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Box, Share2, Shield, Cpu, Code2, Globe, FileCode, GitBranch, Lock, Search } from "lucide-react";
+import { Box, Share2, Shield, Cpu, Code2, Globe, FileCode, GitBranch, Lock, Search, Settings, Activity, Zap } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
+
+// Graph Data
+const nodes = [
+    { id: 'visual-synth', label: 'VisualSynthesizer', type: 'Class', x: 25, y: 70, icon: Box, color: 'blue' },
+    { id: 'system-mod', label: 'SystemModule', type: 'Method', x: 75, y: 20, icon: Settings, color: 'purple' },
+    { id: 'audio-core', label: 'AudioCore', type: 'Class', x: 25, y: 25, icon: Box, color: 'blue' },
+    { id: 'start', label: 'start', type: 'Method', x: 75, y: 55, icon: Settings, color: 'purple' },
+    { id: 'add-effect', label: 'add_effect', type: 'Method', x: 75, y: 85, icon: Settings, color: 'purple' },
+];
+
+const edges = [
+    { from: 'audio-core', to: 'system-mod', label: 'imports', type: 'import' },
+    { from: 'visual-synth', to: 'start', label: 'calls', type: 'call' },
+    { from: 'visual-synth', to: 'add-effect', label: 'calls', type: 'call' },
+];
 
 export default function Features() {
+    const [focusedNode, setFocusedNode] = useState<string | null>(null);
+
+    const isNodeDimmed = (nodeId: string) => {
+        if (!focusedNode) return false;
+        if (nodeId === focusedNode) return false;
+        // Check if connected
+        const isConnected = edges.some(e =>
+            (e.from === focusedNode && e.to === nodeId) ||
+            (e.from === nodeId && e.to === focusedNode)
+        );
+        return !isConnected;
+    };
+
+    const isEdgeDimmed = (edge: any) => {
+        if (!focusedNode) return false;
+        return edge.from !== focusedNode && edge.to !== focusedNode;
+    };
+
+    const handleNodeClick = (nodeId: string) => {
+        if (focusedNode === nodeId) {
+            setFocusedNode(null);
+        } else {
+            setFocusedNode(nodeId);
+        }
+    };
+
     return (
-        <section className="py-20 relative z-10 overflow-hidden">
+        <section className="py-24 relative z-10 overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Feature 1: Interactive Code Graph (Text Left - Visual Right) */}
@@ -36,56 +78,73 @@ export default function Features() {
                                         backgroundSize: '20px 20px'
                                     }}
                                 />
+                                {/* Nodes Container - Centered */}
+                                <div className="relative w-full max-w-lg h-full flex items-center px-8 mx-auto">
 
-                                <div className="absolute inset-0 flex items-center justify-center p-8">
-                                    {/* Edge Layer */}
-                                    <svg className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible">
-                                        <defs>
-                                            <marker id="arrowhead-feature" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-                                                <polygon points="0 0, 8 3, 0 6" fill="#3b82f6" />
-                                            </marker>
-                                        </defs>
-                                        {/* Enemy (Right Port) -> attack (Left Port) */}
-                                        {/* Approx Positions: Enemy Right ~ 200, attack Left ~ 320 */}
-                                        {/* Adjusting coordinates to match the centered layout below */}
-                                        <path d="M 190 150 L 320 150"
-                                            stroke="#3B82F6" strokeWidth="2" fill="none" markerEnd="url(#arrowhead-feature)" />
-                                    </svg>
-
-                                    {/* Nodes Container - Centered */}
-                                    <div className="relative w-full max-w-lg h-full flex items-center justify-between px-12">
-
-                                        {/* Node 1: Enemy (Class) */}
-                                        <div className="relative w-44 rounded-2xl border-2 border-[#3b82f6] bg-white shadow-xl group/node hover:scale-105 transition-transform duration-300 z-10">
-                                            <div className="flex items-center p-3 gap-3">
-                                                <div className="h-10 w-10 rounded-xl bg-[#eff6ff] flex items-center justify-center shrink-0">
-                                                    <Box className="w-5 h-5 text-[#3b82f6]" />
-                                                </div>
-                                                <div className="flex flex-col min-w-0">
-                                                    <span className="text-sm font-bold text-gray-900 leading-none truncate">Enemy</span>
-                                                    <span className="text-[10px] font-bold text-gray-400 mt-1">Class</span>
-                                                </div>
+                                    {/* Node 1: Enemy (Class) */}
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                                        whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                                        viewport={{ once: false }}
+                                        transition={{ duration: 0.5, delay: 0.1 }}
+                                        className="relative w-44 shrink-0 rounded-xl border border-blue-500/50 bg-[#1e1e1e] shadow-lg group/node hover:scale-105 transition-transform duration-300 z-10"
+                                    >
+                                        <div className="flex items-center p-3 gap-3">
+                                            <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                                                <Box className="w-5 h-5 text-blue-400" />
                                             </div>
-                                            {/* Port */}
-                                            <div className="absolute top-1/2 -translate-y-1/2 -right-1.5 w-2.5 h-2.5 bg-white border-[2.5px] border-gray-400 rounded-full z-20" />
-                                        </div>
-
-                                        {/* Node 2: attack (Method) */}
-                                        <div className="relative w-44 rounded-2xl border-2 border-[#a855f7] bg-white shadow-xl group/node hover:scale-105 transition-transform duration-300 delay-100 z-10">
-                                            <div className="flex items-center p-3 gap-3">
-                                                <div className="h-10 w-10 rounded-xl bg-[#faf5ff] flex items-center justify-center shrink-0">
-                                                    <GitBranch className="w-5 h-5 text-[#a855f7]" />
-                                                </div>
-                                                <div className="flex flex-col min-w-0">
-                                                    <span className="text-sm font-bold text-gray-900 leading-none truncate">attack</span>
-                                                    <span className="text-[10px] font-bold text-gray-400 mt-1">Method</span>
-                                                </div>
+                                            <div className="flex flex-col min-w-0">
+                                                <span className="text-sm font-bold text-gray-200 leading-none truncate">Enemy</span>
+                                                <span className="text-[10px] font-bold text-gray-500 mt-1">Class</span>
                                             </div>
-                                            {/* Port */}
-                                            <div className="absolute top-1/2 -translate-y-1/2 -left-1.5 w-2.5 h-2.5 bg-white border-[2.5px] border-gray-400 rounded-full z-20" />
                                         </div>
+                                        {/* Port */}
+                                        <div className="absolute top-1/2 -translate-y-1/2 -right-1.5 w-2.5 h-2.5 bg-[#3f3f46] border border-black rounded-full z-20" />
+                                    </motion.div>
 
+                                    {/* Spacer with Edge */}
+                                    <div className="flex-1 relative h-20 flex items-center">
+                                        <svg className="absolute inset-0 w-full h-full overflow-visible">
+                                            <defs>
+                                                <marker id="arrowhead-feature-gray" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">
+                                                    <polygon points="0 0, 6 2, 0 4" fill="#52525b" />
+                                                </marker>
+                                            </defs>
+                                            <motion.line
+                                                x1="0" y1="50%"
+                                                y2="50%"
+                                                initial={{ x2: "0%", opacity: 0 }}
+                                                whileInView={{ x2: "100%", opacity: 1 }}
+                                                stroke="#52525b"
+                                                strokeWidth="2"
+                                                markerEnd="url(#arrowhead-feature-gray)"
+                                                viewport={{ once: false }}
+                                                transition={{ duration: 0.5, delay: 0.7, ease: "easeOut" }}
+                                            />
+                                        </svg>
                                     </div>
+
+                                    {/* Node 2: attack (Method) */}
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                                        whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                                        viewport={{ once: false }}
+                                        transition={{ duration: 0.5, delay: 0.3 }}
+                                        className="relative w-44 shrink-0 rounded-xl border border-purple-500/50 bg-[#1e1e1e] shadow-lg group/node hover:scale-105 transition-transform duration-300 delay-100 z-10"
+                                    >
+                                        <div className="flex items-center p-3 gap-3">
+                                            <div className="h-10 w-10 rounded-lg bg-purple-500/10 flex items-center justify-center shrink-0">
+                                                <GitBranch className="w-5 h-5 text-purple-400" />
+                                            </div>
+                                            <div className="flex flex-col min-w-0">
+                                                <span className="text-sm font-bold text-gray-200 leading-none truncate">attack</span>
+                                                <span className="text-[10px] font-bold text-gray-500 mt-1">Method</span>
+                                            </div>
+                                        </div>
+                                        {/* Port */}
+                                        <div className="absolute top-1/2 -translate-y-1/2 -left-1.5 w-2.5 h-2.5 bg-[#3f3f46] border border-black rounded-full z-20" />
+                                    </motion.div>
+
                                 </div>
                             </div>
                         </div>
@@ -110,23 +169,113 @@ export default function Features() {
                     </div>
                     <div className="flex-1 w-full">
                         <div className="relative aspect-video rounded-xl bg-[#0F1115] border border-white/10 overflow-hidden shadow-2xl">
-                            <div className="absolute inset-0 bg-gradient-to-bl from-green-500/5 to-transparent" />
-                            {/* Visual Representation of Focus */}
-                            <div className="absolute inset-0 flex items-center justify-center gap-4">
-                                {/* Dimmed Nodes */}
-                                <div className="w-16 h-16 bg-white/5 rounded-lg backdrop-blur-sm opacity-20" />
-                                <div className="w-16 h-16 bg-white/5 rounded-lg backdrop-blur-sm opacity-20" />
+                            <div className="absolute inset-0 bg-[#0F1115]"
+                                onClick={() => setFocusedNode(null)}
+                            >
+                                {/* Dot Grid Background */}
+                                <div className="absolute inset-0 opacity-20"
+                                    style={{
+                                        backgroundImage: 'radial-gradient(#52525b 1px, transparent 1px)',
+                                        backgroundSize: '20px 20px'
+                                    }}
+                                />
 
-                                {/* Focused Node */}
-                                <div className="w-24 h-24 bg-[#1E1E1E] border-2 border-green-500 rounded-xl flex items-center justify-center shadow-[0_0_30px_-5px_rgba(34,197,94,0.3)] z-10 scale-110">
-                                    <Search className="w-8 h-8 text-green-500" />
-                                </div>
+                                {/* Edges Layer */}
+                                <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                    <defs>
+                                        <marker id="arrowhead-gray" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">
+                                            <polygon points="0 0, 6 2, 0 4" fill="#52525b" />
+                                        </marker>
+                                    </defs>
+                                    {edges.map((edge, i) => {
+                                        const fromNode = nodes.find(n => n.id === edge.from)!;
+                                        const toNode = nodes.find(n => n.id === edge.to)!;
+                                        const isDimmed = isEdgeDimmed(edge);
 
-                                {/* Dimmed Nodes */}
-                                <div className="w-16 h-16 bg-white/5 rounded-lg backdrop-blur-sm opacity-20" />
-                                <div className="w-16 h-16 bg-white/5 rounded-lg backdrop-blur-sm opacity-20" />
+                                        // Orthogonal Path Calculation (Step Connector)
+                                        // Connect Right Port (x + offset) to Left Port (x - offset)
+                                        const NODE_WIDTH_PERCENT = 12; // Approx half width of node in %
+                                        const x1 = fromNode.x + NODE_WIDTH_PERCENT;
+                                        const y1 = fromNode.y;
+                                        const x2 = toNode.x - NODE_WIDTH_PERCENT;
+                                        const y2 = toNode.y;
+                                        const midX = (x1 + x2) / 2;
+
+                                        // Path: Start -> Horizontal to Mid -> Vertical to Target Y -> Horizontal to Target
+                                        const d = `M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`;
+
+                                        return (
+                                            <motion.g key={i} animate={{ opacity: isDimmed ? 0.1 : 1 }}>
+                                                <path
+                                                    d={d}
+                                                    fill="none"
+                                                    stroke="#52525b"
+                                                    strokeWidth="0.5"
+                                                    vectorEffect="non-scaling-stroke"
+                                                    markerEnd="url(#arrowhead-gray)"
+                                                />
+                                            </motion.g>
+                                        );
+                                    })}
+                                </svg>
+
+                                {/* Nodes Layer */}
+                                {nodes.map((node) => {
+                                    const isDimmed = isNodeDimmed(node.id);
+                                    const isFocused = focusedNode === node.id;
+                                    const Icon = node.icon;
+
+                                    return (
+                                        <motion.div
+                                            key={node.id}
+                                            className={`absolute p-0.5 rounded-xl cursor-pointer transition-all duration-300
+                                                ${isFocused ? 'z-20 scale-100' : 'z-10 hover:scale-100 active:scale-95'}
+                                            `}
+                                            style={{
+                                                left: `${node.x}%`,
+                                                top: `${node.y}%`,
+                                                translate: '-50% -50%',
+                                            }}
+                                            animate={{
+                                                opacity: isDimmed ? 0.2 : 1,
+                                                filter: isDimmed ? 'grayscale(100%)' : 'none'
+                                            }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleNodeClick(node.id);
+                                            }}
+                                        >
+                                            <div className={`
+                                                relative w-40 flex items-center p-3 gap-3 rounded-lg border bg-[#1E1E1E] shadow-xl
+                                                ${node.color === 'blue' ? 'border-blue-500/50' : 'border-purple-500/50'}
+                                            `}>
+                                                <div className={`h-8 w-8 rounded flex items-center justify-center
+                                                    ${node.color === 'blue' ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'}
+                                                `}>
+                                                    <Icon className="w-5 h-5" />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-bold text-gray-200">{node.label}</span>
+                                                    <span className="text-[10px] text-gray-500">{node.type}</span>
+                                                </div>
+                                                {/* Ports */}
+                                                <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-2 h-2 rounded-full bg-gray-500" />
+                                                <div className="absolute top-1/2 -translate-y-1/2 -left-1 w-2 h-2 rounded-full bg-gray-500" />
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })}
+
+                                {/* Hint Overlay */}
+
                             </div>
                         </div>
+                        {/* Hint Text Outside */}
+                        {!focusedNode && (
+                            <div className="mt-4 text-center text-xs text-gray-500 animate-pulse">
+                                Click a node to Focus
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -167,6 +316,6 @@ export default function Features() {
                 </div>
 
             </div>
-        </section>
+        </section >
     );
 }

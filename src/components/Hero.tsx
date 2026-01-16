@@ -27,24 +27,18 @@ export default function Hero() {
                         transition={{ duration: 0.8, ease: "easeOut" }}
                         className="flex flex-col items-start text-left"
                     >
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-medium text-blue-400 mb-6 backdrop-blur-md">
-                            <span className="flex h-2 w-2 relative">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                            </span>
-                            Free. Built on open source.
-                        </div>
+
 
                         <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-white leading-[1.1]">
-                            DAoN. <br />
+                            DAy-oN. <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-blue-200 to-purple-400 animate-gradient-x">
                                 Redefined.
                             </span>
                         </h1>
 
                         <p className="text-lg text-gray-400 mb-8 max-w-xl leading-relaxed font-light">
-                            DAoN transforms your development experience.
-                            Visualize your entire codebase as an interactive 3D map.
+                            DAy-oN transforms your development experience.
+                            Visualize your entire codebase as an interactive code map.
                             Understand dependencies, trace execution, and vibe with your code like never before.
                         </p>
 
@@ -54,10 +48,7 @@ export default function Hero() {
                                 <span>Download for Windows</span>
                             </button>
 
-                            <button className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-md font-medium transition-all backdrop-blur-sm flex items-center justify-center gap-2 active:scale-95">
-                                <Play className="w-5 h-5 fill-current" />
-                                <span>Web Preview</span>
-                            </button>
+
                         </div>
 
                         <div className="mt-6 text-xs text-gray-500 font-mono">

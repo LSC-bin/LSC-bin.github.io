@@ -20,7 +20,7 @@ export default function Navbar() {
                             <span className="text-white font-mono text-lg">D</span>
                         </div>
                     </div>
-                    <span>DAoN</span>
+                    <span>DAy-oN</span>
                 </div>
 
                 <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">

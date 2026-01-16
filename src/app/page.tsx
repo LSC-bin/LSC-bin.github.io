@@ -12,8 +12,8 @@ export default function Home() {
       <Navbar />
       <Hero />
       <HowItWorks />
-      <Features />
       <WhyDaon />
+      <Features />
       <TechSpecs />
       <Footer />
     </main>
