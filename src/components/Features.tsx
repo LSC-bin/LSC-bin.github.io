@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Box, Share2, Shield, Cpu, Code2, Globe, FileCode, GitBranch, Lock, Search, Settings, Activity, Zap } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import FloatingCardDemo from "./FloatingCardDemo";
 
 // Graph Data
 const nodes = [
@@ -48,7 +49,7 @@ export default function Features() {
     };
 
     return (
-        <section className="py-24 relative z-10 overflow-hidden">
+        <section id="features" className="py-24 relative z-10 overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Feature 1: Interactive Code Graph (Text Left - Visual Right) */}
@@ -298,19 +299,7 @@ export default function Features() {
                     </div>
                     <div className="flex-1 w-full">
                         <div className="relative aspect-video rounded-xl bg-[#0F1115] border border-white/10 overflow-hidden shadow-2xl">
-                            <div className="absolute inset-0 bg-grid-white/[0.02]" />
-                            {/* Floating Cards Mockup */}
-                            <div className="absolute inset-0 p-8">
-                                <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-[#1E1E1E] border border-white/10 rounded-lg shadow-xl -rotate-6 z-0" />
-                                <div className="absolute top-1/3 left-1/3 w-1/2 h-1/2 bg-[#1E1E1E] border border-purple-500/50 rounded-lg shadow-2xl rotate-3 z-10 flex flex-col p-4">
-                                    <div className="h-4 w-1/3 bg-purple-500/20 rounded mb-4" />
-                                    <div className="space-y-2">
-                                        <div className="h-2 w-full bg-white/10 rounded" />
-                                        <div className="h-2 w-5/6 bg-white/10 rounded" />
-                                        <div className="h-2 w-4/6 bg-white/10 rounded" />
-                                    </div>
-                                </div>
-                            </div>
+                            <FloatingCardDemo />
                         </div>
                     </div>
                 </div>

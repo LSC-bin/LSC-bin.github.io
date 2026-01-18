@@ -2,7 +2,8 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
 import HowItWorks from "@/components/HowItWorks";
-import TechSpecs from "@/components/TechSpecs";
+
+import SupportedLanguages from "@/components/SupportedLanguages";
 import Footer from "@/components/Footer";
 import WhyDaon from "@/components/WhyDaon";
 
@@ -14,7 +15,7 @@ export default function Home() {
       <HowItWorks />
       <WhyDaon />
       <Features />
-      <TechSpecs />
+      <SupportedLanguages />
       <Footer />
     </main>
   );
