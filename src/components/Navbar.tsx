@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Download } from "lucide-react";
-import Link from "next/link"; // Changed from 'next/link' just to be explicitly safe.
+import Link from "next/link";
+import Image from "next/image"; // Changed from 'next/link' just to be explicitly safe.
 
 export default function Navbar() {
     return (
@@ -14,11 +15,13 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-3 font-bold text-xl tracking-tight text-white">
                     <div className="relative w-8 h-8 flex items-center justify-center">
-                        <div className="absolute inset-0 bg-blue-500 rounded-lg opacity-20 rotate-3"></div>
-                        <div className="absolute inset-0 bg-blue-500 rounded-lg opacity-20 -rotate-3"></div>
-                        <div className="relative w-full h-full bg-gradient-to-tr from-blue-600 to-blue-400 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
-                            <span className="text-white font-mono text-lg">D</span>
-                        </div>
+                        <Image
+                            src="/daon-logo.png"
+                            alt="DAy-oN Logo"
+                            width={32}
+                            height={32}
+                            className="object-contain"
+                        />
                     </div>
                     <span>DAy-oN</span>
                 </div>
