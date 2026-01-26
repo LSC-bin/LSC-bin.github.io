@@ -6,10 +6,7 @@ export default function Footer() {
                     © {new Date().getFullYear()} DAy-oN. Crafted for developers.
                 </div>
                 <div className="flex items-center gap-8 text-gray-500 text-sm font-medium">
-                    <a href="#" className="hover:text-blue-400 transition-colors">Privacy</a>
-                    <a href="#" className="hover:text-blue-400 transition-colors">Terms</a>
-                    <a href="#" className="hover:text-blue-400 transition-colors">Twitter</a>
-                    <a href="#" className="hover:text-blue-400 transition-colors">GitHub</a>
+                    <span>Contact: <a href="mailto:dayon2000@gmail.com" className="hover:text-blue-400 transition-colors">dayon2000@gmail.com</a></span>
                 </div>
             </div>
         </footer>

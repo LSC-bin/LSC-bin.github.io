@@ -26,11 +26,7 @@ export default function Navbar() {
                     <span>DAy-oN</span>
                 </div>
 
-                <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
-                    <Link href="/#features" className="hover:text-white transition-colors">Features</Link>
-                    <Link href="/docs" className="hover:text-white transition-colors">Docs</Link>
-                    <Link href="/changelog" className="hover:text-white transition-colors">Changelog</Link>
-                </div>
+
 
                 <button className="bg-white text-black px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2 shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]">
                     <Download className="w-4 h-4" />
