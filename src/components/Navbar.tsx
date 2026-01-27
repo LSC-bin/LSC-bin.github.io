@@ -13,7 +13,7 @@ export default function Navbar() {
             className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-md"
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                <div className="flex items-center gap-3 font-bold text-xl tracking-tight text-white">
+                <a href="/" className="flex items-center gap-3 font-bold text-xl tracking-tight text-white transition-opacity hover:opacity-80">
                     <div className="relative w-8 h-8 flex items-center justify-center">
                         <Image
                             src="/daon-logo.png"
@@ -24,7 +24,7 @@ export default function Navbar() {
                         />
                     </div>
                     <span>DAy-oN</span>
-                </div>
+                </a>
 
 
 
