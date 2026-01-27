@@ -34,8 +34,6 @@ export default function Navbar() {
 
                 <a
                     href={downloadUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     className="bg-white text-black px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2 shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]"
                 >
                     <Download className="w-4 h-4" />
