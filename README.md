@@ -9,7 +9,7 @@ You can easily install the software using the distributed setup files.
 1. **Download Installation File**
    - Download the installation file matching your operating system from the distribution page (e.g., GitHub Releases).
    - **Windows**: `DAy-oN-Windows-1.2.0-Setup.exe`
-   - **macOS**: `DAy-oN-Mac-1.2.0-Installer.dmg` (Planned)
+   - **macOS**: `DAy-oN-Mac-1.2.0-Installer.dmg`
 
 2. **Proceed with Installation**
    - Double-click the downloaded file to run it.
