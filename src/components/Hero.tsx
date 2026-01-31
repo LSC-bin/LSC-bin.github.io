@@ -47,14 +47,19 @@ export default function Hero() {
 
                         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
                             <a
-                                href={downloadUrl}
+                                href={downloadUrl.windows}
                                 className="w-full sm:w-auto group relative px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-md font-semibold transition-all shadow-[0_4px_20px_-5px_rgba(37,99,235,0.4)] flex items-center justify-center gap-3 active:scale-95"
                             >
                                 <Download className="w-5 h-5" />
                                 <span>Download for Windows</span>
                             </a>
-
-
+                            <a
+                                href={downloadUrl.mac}
+                                className="w-full sm:w-auto group relative px-8 py-4 bg-white hover:bg-gray-200 text-black rounded-md font-semibold transition-all shadow-[0_4px_20px_-5px_rgba(255,255,255,0.4)] flex items-center justify-center gap-3 active:scale-95"
+                            >
+                                <Download className="w-5 h-5" />
+                                <span>Download for macOS</span>
+                            </a>
                         </div>
 
                         <div className="mt-6 text-xs text-gray-500 font-mono">

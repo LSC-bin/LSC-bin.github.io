@@ -64,10 +64,6 @@ export default function Features() {
                             We turn spaghetti code into a neatly organized, navigable tree structure.
                             Navigate through your project's architecture with eagle-eye precision.
                         </p>
-                        <a href="#" className="inline-flex items-center text-blue-400 font-semibold hover:text-blue-300 transition-colors group">
-                            Explore Graph View
-                            <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
-                        </a>
                     </div>
                     <div className="flex-1 w-full">
                         <div className="relative aspect-video rounded-xl bg-[#0F1115] border border-white/10 overflow-hidden shadow-2xl group">
@@ -163,10 +159,6 @@ export default function Features() {
                             Double-click to dim irrelevant nodes and highlight only the connected context.
                             Instantly filter by functionality, type, or usage to find exactly what you need without the noise.
                         </p>
-                        <a href="#" className="inline-flex items-center text-green-400 font-semibold hover:text-green-300 transition-colors group">
-                            See Filtering in Action
-                            <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
-                        </a>
                     </div>
                     <div className="flex-1 w-full">
                         <div className="relative aspect-video rounded-xl bg-[#0F1115] border border-white/10 overflow-hidden shadow-2xl">
@@ -292,10 +284,6 @@ export default function Features() {
                             Drag, resize, and compare multiple files side-by-side with our infinite canvas.
                             It's like having multiple monitors in a single view.
                         </p>
-                        <a href="#" className="inline-flex items-center text-purple-400 font-semibold hover:text-purple-300 transition-colors group">
-                            Try Infinite Canvas
-                            <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
-                        </a>
                     </div>
                     <div className="flex-1 w-full">
                         <div className="relative aspect-video rounded-xl bg-[#0F1115] border border-white/10 overflow-hidden shadow-2xl">

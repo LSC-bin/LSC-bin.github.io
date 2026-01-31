@@ -32,13 +32,22 @@ export default function Navbar() {
 
 
 
-                <a
-                    href={downloadUrl}
-                    className="bg-white text-black px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2 shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]"
-                >
-                    <Download className="w-4 h-4" />
-                    <span>Get App</span>
-                </a>
+                <div className="flex items-center gap-3">
+                    <a
+                        href={downloadUrl.windows}
+                        className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-blue-500 transition-colors flex items-center gap-2 shadow-[0_4px_12px_-3px_rgba(37,99,235,0.4)]"
+                    >
+                        <Download className="w-4 h-4" />
+                        <span>Windows</span>
+                    </a>
+                    <a
+                        href={downloadUrl.mac}
+                        className="bg-white text-black px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2 shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]"
+                    >
+                        <Download className="w-4 h-4" />
+                        <span>macOS</span>
+                    </a>
+                </div>
             </div>
         </motion.nav>
     );
