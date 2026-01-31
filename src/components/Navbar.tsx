@@ -1,13 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Download } from "lucide-react";
+import { Download, Github } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image"; // Changed from 'next/link' just to be explicitly safe.
 
+import { useRouter } from "next/navigation";
 import { useLatestRelease } from "@/hooks/useLatestRelease";
 
 export default function Navbar() {
+    const router = useRouter();
     const downloadUrl = useLatestRelease();
 
     return (
@@ -32,17 +34,36 @@ export default function Navbar() {
 
 
 
+                <div className="flex items-center gap-6">
+                    <Link
+                        href="/reviews"
+                        className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
+                    >
+                        Reviews
+                    </Link>
+                    <a
+                        href="https://github.com/LSC-bin/LSC-bin.github.io"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mr-2 text-gray-400 hover:text-white transition-colors"
+                    >
+                        <Github className="w-5 h-5" />
+                    </a>
+                </div>
+
                 <div className="flex items-center gap-3">
                     <a
                         href={downloadUrl.windows}
-                        className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-blue-500 transition-colors flex items-center gap-2 shadow-[0_4px_12px_-3px_rgba(37,99,235,0.4)]"
+                        onClick={() => router.push('/reviews')}
+                        className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-blue-500 transition-colors flex items-center gap-2 shadow-[0_4px_12px_-3px_rgba(37,99,235,0.4)] cursor-pointer"
                     >
                         <Download className="w-4 h-4" />
                         <span>Windows</span>
                     </a>
                     <a
                         href={downloadUrl.mac}
-                        className="bg-white text-black px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2 shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]"
+                        onClick={() => router.push('/reviews')}
+                        className="bg-white text-black px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2 shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)] cursor-pointer"
                     >
                         <Download className="w-4 h-4" />
                         <span>macOS</span>

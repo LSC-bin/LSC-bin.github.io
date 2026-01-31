@@ -2,9 +2,12 @@
 
 import { motion } from "framer-motion";
 import { Download, Play, Terminal, Box, Search, Layers, Command, GitBranch, FileCode, Minus, Square, X as XIcon } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLatestRelease } from "@/hooks/useLatestRelease";
 
 export default function Hero() {
+    const router = useRouter();
     const downloadUrl = useLatestRelease();
 
     return (
@@ -48,14 +51,16 @@ export default function Hero() {
                         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
                             <a
                                 href={downloadUrl.windows}
-                                className="w-full sm:w-auto group relative px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-md font-semibold transition-all shadow-[0_4px_20px_-5px_rgba(37,99,235,0.4)] flex items-center justify-center gap-3 active:scale-95"
+                                onClick={() => router.push('/reviews')}
+                                className="w-full sm:w-auto group relative px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-md font-semibold transition-all shadow-[0_4px_20px_-5px_rgba(37,99,235,0.4)] flex items-center justify-center gap-3 active:scale-95 cursor-pointer"
                             >
                                 <Download className="w-5 h-5" />
                                 <span>Download for Windows</span>
                             </a>
                             <a
                                 href={downloadUrl.mac}
-                                className="w-full sm:w-auto group relative px-8 py-4 bg-white hover:bg-gray-200 text-black rounded-md font-semibold transition-all shadow-[0_4px_20px_-5px_rgba(255,255,255,0.4)] flex items-center justify-center gap-3 active:scale-95"
+                                onClick={() => router.push('/reviews')}
+                                className="w-full sm:w-auto group relative px-8 py-4 bg-white hover:bg-gray-200 text-black rounded-md font-semibold transition-all shadow-[0_4px_20px_-5px_rgba(255,255,255,0.4)] flex items-center justify-center gap-3 active:scale-95 cursor-pointer"
                             >
                                 <Download className="w-5 h-5" />
                                 <span>Download for macOS</span>
@@ -63,8 +68,29 @@ export default function Hero() {
                         </div>
 
                         <div className="mt-6 text-xs text-gray-500 font-mono">
-                            v1.2.0 | Free for personal use | <span className="text-blue-400 hover:underline cursor-pointer">Release Notes</span>
+                            {downloadUrl.version} | Free for personal use |
+                            <div className="relative inline-block ml-1 group">
+                                <a
+                                    href={downloadUrl.releaseNotesUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="hover:text-blue-400 transition-colors cursor-pointer"
+                                >
+                                    Release Notes
+                                </a>
+
+                                {/* Speech Bubble Card */}
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-80 p-4 bg-[#0F1115] border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none">
+                                    <div className="text-xs text-gray-400 whitespace-pre-wrap font-sans text-left leading-relaxed max-h-60 overflow-y-auto custom-scrollbar">
+                                        <div className="font-bold text-white mb-2 text-sm border-b border-white/10 pb-2">What's New in {downloadUrl.version}</div>
+                                        {downloadUrl.notes}
+                                    </div>
+                                    {/* Arrow */}
+                                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#0F1115] border-r border-b border-white/10 rotate-45"></div>
+                                </div>
+                            </div>
                         </div>
+
                     </motion.div>
 
                     {/* Right Column: React Flow Mockup - High Fidelity */}
@@ -347,9 +373,9 @@ export default function Hero() {
                             </div>
                         </motion.div>
                     </div>
-                </div>
-            </div>
-        </section>
+                </div >
+            </div >
+        </section >
     );
 }
 
